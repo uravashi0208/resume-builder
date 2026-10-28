@@ -2,7 +2,7 @@
 // Firebase Console -> Project Settings -> General -> Your apps -> Firebase SDK snippet -> Config
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5000/api',
+  apiUrl: 'https://resume-builder-backend-fsnx.onrender.com/api',
   firebaseConfig: {
     apiKey: "AIzaSyAmJ0k4mDqlBATk98J5Symw_bAoz-w2PgA",
   authDomain: "resume-builder-app-ce32a.firebaseapp.com",
