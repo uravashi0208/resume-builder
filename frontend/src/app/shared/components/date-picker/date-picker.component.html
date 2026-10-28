@@ -1,0 +1,65 @@
+<!-- src/app/shared/components/date-picker/date-picker.component.html -->
+<div class="field" [class.has-error]="isInvalid">
+  <label *ngIf="label" class="field-label">
+    {{ label }}<span *ngIf="required" class="required-star"> *</span>
+  </label>
+
+  <!-- ===== mode="date": normal calendar (+ optional Present checkbox) ===== -->
+  <div class="d-flex align-center gap-3" *ngIf="mode === 'date'">
+    <input
+      class="field-input flex-1"
+      type="date"
+      [value]="value"
+      [disabled]="disabled || isPresent"
+      [min]="min"
+      [max]="max"
+      (change)="onDateChange($event)"
+      (blur)="onBlur()"
+      [class.is-invalid]="isInvalid"
+      [class.dimmed]="isPresent"
+    />
+
+    <label *ngIf="allowPresent" class="check align-center" (click)="togglePresent()">
+      <span class="check-box sm" [class.checked]="isPresent">
+        <svg *ngIf="isPresent" viewBox="0 0 12 10" width="10" height="10">
+          <polyline points="1,5 4.5,9 11,1" stroke="white" stroke-width="2"
+            fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="text-nowrap">Present</span>
+    </label>
+  </div>
+
+  <!-- ===== mode="month-year" / "year": box + dropdown ===== -->
+  <div class="my-box relative" *ngIf="mode !== 'date'">
+    <div class="field-input my-trigger d-flex align-center justify-between" [class.is-invalid]="isInvalid" (click)="toggleOpen()">
+      <span [class.my-placeholder]="!display">{{ display || placeholder }}</span>
+      <button type="button" class="my-clear" *ngIf="display" (click)="clear($event)">✕</button>
+    </div>
+
+    <div class="my-dropdown" *ngIf="isOpen" [ngStyle]="dropdownStyle"
+         [class.narrow]="narrow" [class.year-only]="mode === 'year'">
+
+      <!-- Present toggle (inside the dropdown) -->
+      <div class="my-present d-flex align-center gap-3" *ngIf="allowPresent" (click)="togglePresent()">
+        <span class="switch" [class.on]="isPresent"></span>
+        <span>Present (Current)</span>
+      </div>
+
+      <!-- Months + Years (greyed out while Present is on) -->
+      <div class="my-body" [class.disabled]="isPresent">
+        <div class="my-months d-grid" *ngIf="mode === 'month-year'">
+          <button type="button" *ngFor="let m of months; let i = index"
+                  [class.selected]="month === i + 1" (click)="pickMonth(i + 1)">{{ m }}</button>
+        </div>
+        <div class="my-years d-grid">
+          <button type="button" *ngFor="let y of years"
+                  [class.selected]="year === y" (click)="pickYear(y)">{{ y }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <small *ngIf="hint && !isInvalid" class="field-hint">{{ hint }}</small>
+  <small *ngIf="isInvalid && firstError" class="field-error">{{ firstError }}</small>
+</div>

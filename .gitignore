@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+serviceAccountKey.json
+.angular/
+*.log
+
+backend/be.tar
+frontend/fe.tar
+.env
+.env.*
+!.env.example

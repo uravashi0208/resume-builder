@@ -1,0 +1,20 @@
+<div class="page-shell" style="--page-w:1100px">
+  <header class="page-head">
+    <div><p class="eyebrow">Overview</p><h2 class="display page-title">My <em class="grad-text">dashboard</em></h2></div>
+  </header>
+
+  <div *ngIf="loading">Loading...</div>
+
+  <div *ngIf="!loading && notFound" class="empty-state glass card-round text-center">
+    <p>You haven't created a profile yet.</p>
+    <button class="btn-primary" (click)="createNew()">Create Profile</button>
+  </div>
+
+  <div *ngIf="!loading && profile">
+    <!-- Common data render thay che, template select prmane different look -->
+    <app-template-one *ngIf="profile.template === 'template-one'" [profile]="profile"></app-template-one>
+    <app-template-two *ngIf="profile.template === 'template-two'" [profile]="profile"></app-template-two>
+    <app-template-three *ngIf="profile.template === 'template-three'" [profile]="profile"></app-template-three>
+    <app-resume *ngIf="!['template-one','template-two','template-three'].includes(profile.template)" [profile]="profile"></app-resume>
+  </div>
+</div>

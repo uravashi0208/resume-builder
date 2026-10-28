@@ -1,0 +1,68 @@
+<div class="resume t1" *ngIf="profile" [style.fontFamily]="profile.font" [style.textAlign]="profile.headerAlign === 'center' ? 'center' : null" [style.--t-primary]="profile.primaryColor || '#111827'" [style.--t-accent]="profile.accentColor || '#4f46e5'">
+  <aside class="sidebar">
+    <div class="t1-name-row" [class.same-line]="profile.titlePosition === 'same-line'">
+      <h1 [style.fontWeight]="profile.nameStyle === 'bold' ? '700' : '400'">{{ profile.fullName }}</h1>
+      <h4 [style.fontWeight]="profile.titleStyle === 'bold' ? '700' : '400'">{{ profile.professionalTitle }}</h4>
+    </div>
+
+    <div class="contact"
+      [class.contact-inline]="profile.detailsArrangement === 'inline'"
+      [class.contact-columns]="profile.detailsArrangement === 'columns'">
+      <p><ng-container *ngIf="profile.detailsSeparator === 'bullet'">• </ng-container><ng-container *ngIf="profile.detailsSeparator === 'bar'">| </ng-container>{{ profile.email }}</p>
+      <p><ng-container *ngIf="profile.detailsSeparator === 'bullet'">• </ng-container><ng-container *ngIf="profile.detailsSeparator === 'bar'">| </ng-container>{{ profile.phone }}</p>
+      <p><ng-container *ngIf="profile.detailsSeparator === 'bullet'">• </ng-container><ng-container *ngIf="profile.detailsSeparator === 'bar'">| </ng-container>{{ profile.location }}</p>
+    </div>
+
+    <div class="section" *ngIf="profile.socialLinks">
+      <h3>{{ label('links') }}</h3>
+      <a *ngIf="profile.socialLinks.linkedin" [href]="profile.socialLinks.linkedin" target="_blank">LinkedIn</a>
+      <a *ngIf="profile.socialLinks.github" [href]="profile.socialLinks.github" target="_blank">GitHub</a>
+      <a *ngIf="profile.socialLinks.portfolio" [href]="profile.socialLinks.portfolio" target="_blank">Portfolio</a>
+      <a *ngIf="profile.socialLinks.twitter" [href]="profile.socialLinks.twitter" target="_blank">Twitter</a>
+    </div>
+
+    <div class="section">
+      <h3>{{ label('technicalSkills') }}</h3>
+      <div *ngFor="let s of profile.technicalSkills">
+        <b>{{ s.category }}</b>
+        <p>{{ s.items }}</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>{{ label('coreCompetencies') }}</h3>
+      <ul>
+        <li *ngFor="let c of profile.coreCompetencies">{{ c }}</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>{{ label('interests') }}</h3>
+      <p>{{ profile.interests?.join(', ') }}</p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section>
+      <h2>{{ label('aboutMe') }}</h2>
+      <p>{{ profile.aboutMe }}</p>
+    </section>
+
+    <section>
+      <h2>{{ label('experience') }}</h2>
+      <div class="exp" *ngFor="let e of profile.experience">
+        <h4>{{ e.role }} — {{ e.company }}</h4>
+        <p class="meta">{{ formatDuration(e) }} | {{ e.location }}</p>
+        <p>{{ e.description }}</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>{{ label('education') }}</h2>
+      <div class="edu" *ngFor="let ed of profile.education">
+        <h4>{{ ed.degree }}</h4>
+        <p class="meta">{{ ed.institute }} | {{ ed.duration }} | {{ ed.score }}</p>
+      </div>
+    </section>
+  </main>
+</div>

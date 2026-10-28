@@ -1,0 +1,847 @@
+<!-- =====================================================================
+     app-resume  –  ONE component, EIGHT layouts via [ngSwitch]
+     Adding a new template = add a new <ng-template ngSwitchCase="template-four">
+     ===================================================================== -->
+
+<div class="resume-root" *ngIf="profile"
+     [attr.dir]="isRtl ? 'rtl' : null" [attr.lang]="docLang.locale"
+     [attr.data-reordered]="reordered ? '' : null"
+     [style.--fs-base]="fontSize.base + 'pt'"
+     [style.--fs-name]="fsNamePt + 'pt'"
+     [style.--fs-title]="fsTitlePt + 'pt'"
+     [style.--fs-heading]="fsHeadingPt + 'pt'"
+     [style.--fs-entry]="fsEntryPt + 'pt'"
+     [style.--heading-k]="headingK"
+     [style.--entry-k]="entryK"
+     [style.--line-height]="spacingCfg.lineHeight"
+     [style.--gap]="gapRem + 'rem'"
+     [style.--gap-k]="gapK"
+     [style.--pad-kx]="padKx"
+     [style.--pad-ky]="padKy"
+     [style.--pad-x]="spacingCfg.sideMargin + 'mm'"
+     [style.--pad-y]="spacingCfg.topBottomMargin + 'mm'"
+     [style.--name-font]="profile.nameFont || profile.font"
+     [style.--bg-color]="pageBg"
+     [style.--page-image]="pageImageCss"
+     [style.--page-fg]="pageFg"
+     [style.--hdr-bg]="hdrBg"
+     [style.--hdr-fg]="hdrFg"
+     [style.--hdr-image]="hdrImageCss"
+     [style.--border-color]="borderColorCss"
+     [style.--border-image]="borderImageCss"
+     [style.--bw-t]="bw('top')" [style.--bw-b]="bw('bottom')" [style.--bw-l]="bw('left')" [style.--bw-r]="bw('right')"
+     [attr.data-page-fg]="pageFg ? 'true' : null"
+     [attr.data-page-img]="pageImageOn"
+     [attr.data-hdr-custom]="hdrCustom"
+     [attr.data-sum-heading]="sumShowHeading"
+     [attr.data-lang-style]="langStyle"
+     [attr.data-hdr-align]="headerCenter ? 'center' : 'left'"
+     [attr.data-det]="detKey"
+     [attr.data-same-line]="sameLine"
+     [attr.data-ic-shape]="iconShape"
+     [attr.data-hdr-band]="isBand"
+     [attr.data-border-img]="borderImageOn"
+     [attr.data-acc-headings-line]="accentApply.headingsLine"
+     [attr.data-cap]="headingCfg.capitalization"
+     [attr.data-icon-style]="headingCfg.icons"
+     [attr.data-heading-style]="headingCfg.style"
+     [attr.data-entry-structure]="entryLayoutCfg.structure"
+     [attr.data-date-pos]="entryLayoutCfg.dateLocationPosition"
+     [attr.data-subtitle]="entryLayoutCfg.subtitlePlacement"
+     [attr.data-col-mode]="entryLayoutCfg.columnWidthMode"
+     [style.--col-left]="entryLayoutCfg.leftColumnWidth + '%'"
+     [attr.data-sub-style]="entryLayoutCfg.subtitleStyle"
+     [attr.data-date-style]="entryLayoutCfg.dateStyle"
+     [attr.data-loc-style]="entryLayoutCfg.locationStyle"
+     [attr.data-indent-body]="entryLayoutCfg.indentBody"
+     [attr.data-list-style]="entryLayoutCfg.listStyle"
+     [attr.data-dl-order]="entryLayoutCfg.dateLocationOrder"
+     [attr.data-link-underline]="linkCfg.underline"
+     [attr.data-link-blue]="linkCfg.blueColor"
+     [attr.data-link-icon]="linkCfg.icon"
+     [attr.data-hl-email]="linkCfg.headerEmail"
+     [attr.data-hl-phone]="linkCfg.headerPhone"
+     [attr.data-hl-linkedin]="linkCfg.headerLinkedin"
+     [attr.data-hdr-dark]="hdrOnDark"
+     [attr.data-acc-name]="accentApply.name"
+     [attr.data-acc-title]="accentApply.jobTitle"
+     [attr.data-acc-headings]="accentApply.headings"
+     [attr.data-acc-header-icons]="accentApply.headerIcons"
+     [attr.data-acc-dots]="accentApply.dots"
+     [attr.data-acc-dates]="accentApply.dates"
+     [attr.data-acc-entry-title]="accentApply.entryTitle"
+     [attr.data-acc-entry-sub]="accentApply.entrySubtitle"
+     [attr.data-acc-link-icons]="accentApply.linkIcons">
+<!-- one skill category line: "Category: items" / "Category — items" / "Category (items)" -->
+<ng-template #skLine let-g>
+  <b *ngIf="g.category?.trim()">{{ g.category }}</b><ng-container *ngIf="g.category?.trim() && g.items?.trim()"><ng-container [ngSwitch]="sk.subinfo"><ng-container *ngSwitchCase="'dash'"> — </ng-container><ng-container *ngSwitchCase="'bracket'"> (</ng-container><ng-container *ngSwitchDefault>: </ng-container></ng-container></ng-container>{{ itemsText(g) }}<ng-container *ngIf="sk.subinfo === 'bracket' && g.category?.trim() && g.items?.trim()">)</ng-container>
+</ng-template>
+
+<!-- Skills renderer shared by every template (Customize -> Sections -> Skills) -->
+<ng-template #skillsTpl>
+  <ng-container [ngSwitch]="sk.style">
+    <!-- Rows: one line per category -->
+    <div *ngSwitchCase="'rows'" class="sk-rows" [class.sk-spacious]="sk.rowSpacing === 'spacious'" [class.sk-bul]="sk.rowBullets">
+      <div class="sk-row" *ngFor="let g of skillGroups"><ng-container *ngTemplateOutlet="skLine; context: { $implicit: g }"></ng-container></div>
+    </div>
+    <!-- Compact: one flowing paragraph, groups split by the chosen separator -->
+    <p *ngSwitchCase="'compact'" class="sk-compact">
+      <ng-container *ngFor="let g of skillGroups; let l = last"><span class="sk-cg"><ng-container *ngTemplateOutlet="skLine; context: { $implicit: g }"></ng-container></span><span class="sk-sep" *ngIf="!l"> {{ skSepChar }} </span></ng-container>
+    </p>
+    <!-- Bubble: every category sits in its own bordered box -->
+    <div *ngSwitchCase="'bubble'" class="sk-bubbles">
+      <div class="sk-bubble" *ngFor="let g of skillGroups"><ng-container *ngTemplateOutlet="skLine; context: { $implicit: g }"></ng-container></div>
+    </div>
+    <!-- Grid (default, also Level until skills carry a level): category blocks flowing into N columns -->
+    <div *ngSwitchDefault class="sk-colgrid" [style.--sk-cols]="sk.cols">
+      <div class="sk-cell" *ngFor="let g of skillGroups"><b *ngIf="g.category?.trim()">{{ g.category }}</b><div>{{ itemsText(g) }}</div></div>
+    </div>
+  </ng-container>
+</ng-template>
+
+<!-- Declaration / GDPR consent (Customize -> Sections -> Declaration) -->
+<ng-template #declTpl let-hc="hc">
+  <div class="decl" *ngIf="profile.gdprConsent?.trim()" [attr.data-decl-pos]="declCfg.position" [style.order]="ord('declaration')">
+    <h2 [ngClass]="(hc || 'sec-h') + ' decl-h'" *ngIf="declCfg.showHeading"><span *ngIf="hc; else plainDecl">{{ gdprLabel }}</span><ng-template #plainDecl>{{ gdprLabel }}</ng-template></h2>
+    <div class="gdpr-consent">{{ profile.gdprConsent }}</div>
+  </div>
+</ng-template>
+
+<!-- Summary shown inside the header (Customize → Sections → Summary) -->
+<ng-template #sumHeadTpl let-hc="hc">
+  <div class="sum-in-head" *ngIf="sumInHeader">
+    <h2 [ngClass]="(hc || 'sec-h') + ' sum-h'" *ngIf="sumShowHeading"><span *ngIf="hc; else plainSum">{{ label('aboutMe') }}</span><ng-template #plainSum>{{ label('aboutMe') }}</ng-template></h2>
+    <div [innerHTML]="safe(profile.aboutMe)"></div>
+  </div>
+</ng-template>
+
+<ng-container [ngSwitch]="profile.template">
+
+  <!-- ──────────────────────────────────────────────────────────────────
+       TEMPLATE ONE  –  Classic  (dark sidebar + white main)
+  ────────────────────────────────────────────────────────────────────── -->
+  <ng-template ngSwitchCase="template-one">
+    <div class="resume t1"
+         [style.fontFamily]="profile.font"
+         [style.--t-primary]="profile.primaryColor || '#111827'"
+         [style.--t-accent]="profile.accentColor || '#4f46e5'">
+
+      <aside class="t1-sidebar">
+        <!-- Name + Title -->
+        <div class="name-block" [class.name-sameline]="sameLine" [style.textAlign]="headerCenter ? 'center' : null">
+          <h1 class="res-name" [style.fontWeight]="nameWeight">{{ profile.fullName }}</h1>
+          <h4 class="res-title" [style.fontWeight]="titleWeight">{{ profile.professionalTitle }}</h4>
+        </div>
+
+        <!-- Contact details -->
+        <div class="contact-block"
+             [class.det-inline]="detailsInline"
+             [class.det-columns]="detailsColumns"
+             [style.textAlign]="headerCenter ? 'center' : null">
+          <p *ngIf="profile.email">
+            <span class="ic-badge" [class]="'ic-' + iconShape" *ngIf="sep === 'icon'">
+              <svg viewBox="0 0 16 16"><path d="M2 4.5A.5.5 0 0 1 2.5 4h11a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-7z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M2 5l6 4 6-4" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+            </span>
+            <span class="sep-text" *ngIf="sep === 'bullet'">•&nbsp;</span>
+            <span class="sep-text" *ngIf="sep === 'bar'">|&nbsp;</span>
+            <a class="hl" data-k="email" [href]="'mailto:' + profile.email">{{ profile.email }}</a>
+          </p>
+          <p *ngIf="profile.phone">
+            <span class="ic-badge" [class]="'ic-' + iconShape" *ngIf="sep === 'icon'">
+              <svg viewBox="0 0 16 16"><path d="M4.5 2A1.5 1.5 0 0 0 3 3.5v.793c0 .414.18.8.5 1.07l.8.64A7 7 0 0 0 8 9.5a7 7 0 0 0 3.59-1.497l.8-.64c.32-.27.5-.656.5-1.07V3.5A1.5 1.5 0 0 0 11.5 2h-7z" stroke="currentColor" stroke-width="1.1" fill="none"/></svg>
+            </span>
+            <span class="sep-text" *ngIf="sep === 'bullet'">•&nbsp;</span>
+            <span class="sep-text" *ngIf="sep === 'bar'">|&nbsp;</span>
+            <a class="hl" data-k="phone" [href]="'tel:' + profile.phone">{{ profile.phone }}</a>
+          </p>
+          <p *ngIf="profile.location">
+            <span class="ic-badge" [class]="'ic-' + iconShape" *ngIf="sep === 'icon'">
+              <svg viewBox="0 0 16 16"><path d="M8 1.5A4.5 4.5 0 0 0 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6A4.5 4.5 0 0 0 8 1.5z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="8" cy="6" r="1.5" fill="currentColor"/></svg>
+            </span>
+            <span class="sep-text" *ngIf="sep === 'bullet'">•&nbsp;</span>
+            <span class="sep-text" *ngIf="sep === 'bar'">|&nbsp;</span>
+            {{ profile.location }}
+          </p>
+        </div>
+
+        <ng-container *ngTemplateOutlet="sumHeadTpl"></ng-container>
+
+        <!-- Links -->
+        <div class="t1-section" *ngIf="profile.socialLinks?.linkedin || profile.socialLinks?.github || profile.socialLinks?.portfolio || profile.socialLinks?.twitter">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('links') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('links') }}</h3>
+          <a *ngIf="profile.socialLinks.linkedin"  [href]="profile.socialLinks.linkedin"  target="_blank">LinkedIn</a>
+          <a *ngIf="profile.socialLinks.github"    [href]="profile.socialLinks.github"    target="_blank">GitHub</a>
+          <a *ngIf="profile.socialLinks.portfolio" [href]="profile.socialLinks.portfolio" target="_blank">Portfolio</a>
+          <a *ngIf="profile.socialLinks.twitter"   [href]="profile.socialLinks.twitter"   target="_blank">Twitter</a>
+        </div>
+
+        <div class="t1-section" *ngIf="skillGroups.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('technicalSkills') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('technicalSkills') }}</h3>
+          <ng-container *ngTemplateOutlet="skillsTpl"></ng-container>
+        </div>
+
+        <div class="t1-section" *ngIf="competencyList.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('coreCompetencies') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('coreCompetencies') }}</h3>
+          <ul><li *ngFor="let c of competencyList">{{ c }}</li></ul>
+        </div>
+
+        <div class="t1-section" *ngIf="interestList.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('interests') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('interests') }}</h3>
+          <p>{{ interestList.join(', ') }}</p>
+        </div>
+      </aside>
+
+      <main class="t1-main">
+        <div class="res-pb" data-page-break *ngIf="pbActive" [style.order]="ord('pageBreak')"></div>
+        <section *ngIf="!sumInHeader && hasAbout" [style.order]="ord('aboutMe')"><h2 class="sec-h sum-h"><app-section-icon *ngIf="icon('aboutMe') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('aboutMe') }}</h2><p [innerHTML]="safe(profile.aboutMe)"></p></section>
+
+        <section *ngIf="expList.length" [style.order]="ord('experience')">
+          <h2 class="sec-h"><app-section-icon *ngIf="icon('experience') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('experience') }}</h2>
+          <div class="t1-exp" *ngFor="let e of expList">
+            <h4>{{ expFirst(e) }}<ng-container *ngIf="expSecond(e)"> — <span class="sub-s">{{ expSecond(e) }}</span></ng-container></h4>
+            <p class="meta"><span class="dt-s">{{ formatDuration(e) }}</span>  ·  <span class="loc-s">{{ e.location }}</span></p>
+            <p [innerHTML]="safe(e.description)"></p>
+          </div>
+        </section>
+
+        <section *ngIf="educationList.length" [style.order]="ord('education')">
+          <h2 class="sec-h"><app-section-icon *ngIf="icon('education') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('education') }}</h2>
+          <div class="t1-edu" *ngFor="let ed of educationList">
+            <div class="edu-header">
+              <h4>{{ eduFirst(ed) }}</h4>
+              <span class="edu-dates dt-s">{{ eduDates(ed) }}</span>
+            </div>
+            <p class="meta"><span class="sub-s">{{ eduSecond(ed) }}</span><ng-container *ngIf="ed.location"> · <span class="loc-s">{{ ed.location }}</span></ng-container><ng-container *ngIf="ed.score"> · {{ ed.score }}</ng-container></p>
+            <p class="edu-desc" *ngIf="ed.description" [innerHTML]="safe(ed.description)"></p>
+          </div>
+        </section>
+        <ng-container *ngTemplateOutlet="declTpl"></ng-container>
+      </main>
+    </div>
+  </ng-template>
+
+  <!-- ──────────────────────────────────────────────────────────────────
+       TEMPLATE TWO  –  Modern  (coloured full-width header)
+  ────────────────────────────────────────────────────────────────────── -->
+  <ng-template ngSwitchCase="template-two">
+    <div class="resume t2"
+         [style.fontFamily]="profile.font"
+         [style.--t-accent]="profile.accentColor || '#16a34a'">
+
+      <header class="t2-hero" [style.textAlign]="headerCenter ? 'center' : null">
+        <div class="name-block" [class.name-sameline]="sameLine">
+          <h1 class="res-name" [style.fontWeight]="nameWeight">{{ profile.fullName }}</h1>
+          <h4 class="res-title" [style.fontWeight]="titleWeight">{{ profile.professionalTitle }}</h4>
+        </div>
+
+        <div class="contact-block t2-contacts"
+             [class.det-inline]="detailsInline"
+             [class.det-columns]="detailsColumns"
+             [style.justifyContent]="headerCenter ? 'center' : null">
+          <span *ngIf="profile.email">
+            <span class="ic-badge ic-outline" [class]="'ic-' + iconShape" *ngIf="sep === 'icon'">
+              <svg viewBox="0 0 16 16"><path d="M2 4.5A.5.5 0 0 1 2.5 4h11a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-7z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M2 5l6 4 6-4" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+            </span>
+            <span class="sep-text" *ngIf="sep === 'bullet'">•&nbsp;</span>
+            <span class="sep-text" *ngIf="sep === 'bar'">|&nbsp;</span>
+            <a class="hl" data-k="email" [href]="'mailto:' + profile.email">{{ profile.email }}</a>
+          </span>
+          <span *ngIf="profile.phone">
+            <span class="ic-badge ic-outline" [class]="'ic-' + iconShape" *ngIf="sep === 'icon'">
+              <svg viewBox="0 0 16 16"><path d="M3.5 2h3l1 3-1.5 1.5a8 8 0 0 0 3.5 3.5L11 8.5l3 1v3a1 1 0 0 1-1 1C6 14 2 10 2 3.5A1 1 0 0 1 3.5 2z" stroke="currentColor" stroke-width="1.1" fill="none"/></svg>
+            </span>
+            <span class="sep-text" *ngIf="sep === 'bullet'">•&nbsp;</span>
+            <span class="sep-text" *ngIf="sep === 'bar'">|&nbsp;</span>
+            <a class="hl" data-k="phone" [href]="'tel:' + profile.phone">{{ profile.phone }}</a>
+          </span>
+          <span *ngIf="profile.location">
+            <span class="ic-badge ic-outline" [class]="'ic-' + iconShape" *ngIf="sep === 'icon'">
+              <svg viewBox="0 0 16 16"><path d="M8 1.5A4.5 4.5 0 0 0 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6A4.5 4.5 0 0 0 8 1.5z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="8" cy="6" r="1.5" fill="currentColor"/></svg>
+            </span>
+            <span class="sep-text" *ngIf="sep === 'bullet'">•&nbsp;</span>
+            <span class="sep-text" *ngIf="sep === 'bar'">|&nbsp;</span>
+            {{ profile.location }}
+          </span>
+        </div>
+      </header>
+      <ng-container *ngTemplateOutlet="sumHeadTpl"></ng-container>
+
+      <div class="t2-grid">
+        <div class="t2-left">
+        <div class="res-pb" data-page-break *ngIf="pbActive" [style.order]="ord('pageBreak')"></div>
+          <section *ngIf="!sumInHeader && hasAbout" [style.order]="ord('aboutMe')"><h2 class="sec-h sum-h"><app-section-icon *ngIf="icon('aboutMe') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('aboutMe') }}</h2><p [innerHTML]="safe(profile.aboutMe)"></p></section>
+          <section *ngIf="expList.length" [style.order]="ord('experience')">
+            <h2 class="sec-h"><app-section-icon *ngIf="icon('experience') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('experience') }}</h2>
+            <div class="t2-exp" *ngFor="let e of expList">
+              <h4>{{ expFirst(e) }}</h4>
+              <p class="meta"><ng-container *ngIf="expSecond(e)"><span class="sub-s">{{ expSecond(e) }}</span> · </ng-container><span class="dt-s">{{ formatDuration(e) }}</span> · <span class="loc-s">{{ e.location }}</span></p>
+              <p [innerHTML]="safe(e.description)"></p>
+            </div>
+          </section>
+          <section *ngIf="educationList.length" [style.order]="ord('education')">
+            <h2 class="sec-h"><app-section-icon *ngIf="icon('education') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('education') }}</h2>
+            <div class="t2-edu" *ngFor="let ed of educationList">
+              <div class="edu-header">
+                <h4>{{ eduFirst(ed) }}</h4>
+                <span class="edu-dates dt-s">{{ eduDates(ed) }}</span>
+              </div>
+              <p class="meta"><span class="sub-s">{{ eduSecond(ed) }}</span><ng-container *ngIf="ed.location"> · <span class="loc-s">{{ ed.location }}</span></ng-container><ng-container *ngIf="ed.score"> · {{ ed.score }}</ng-container></p>
+              <p class="edu-desc" *ngIf="ed.description" [innerHTML]="safe(ed.description)"></p>
+            </div>
+          </section>
+          <ng-container *ngTemplateOutlet="declTpl"></ng-container>
+        </div>
+
+        <div class="t2-right">
+          <section *ngIf="skillGroups.length" [style.order]="ord('technicalSkills')">
+            <h2 class="sec-h"><app-section-icon *ngIf="icon('technicalSkills') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('technicalSkills') }}</h2>
+            <ng-container *ngTemplateOutlet="skillsTpl"></ng-container>
+          </section>
+          <section *ngIf="competencyList.length" [style.order]="ord('coreCompetencies')">
+            <h2 class="sec-h"><app-section-icon *ngIf="icon('coreCompetencies') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('coreCompetencies') }}</h2>
+            <div class="chips" *ngIf="interestList.length"><span class="chip" *ngFor="let c of competencyList">{{ c }}</span></div>
+          </section>
+          <section *ngIf="interestList.length" [style.order]="ord('interests')">
+            <h2 class="sec-h"><app-section-icon *ngIf="icon('interests') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('interests') }}</h2>
+            <div class="chips"><span class="chip" *ngFor="let i of interestList">{{ i }}</span></div>
+          </section>
+          <section *ngIf="profile.socialLinks?.linkedin || profile.socialLinks?.github || profile.socialLinks?.portfolio">
+            <h2 class="sec-h"><app-section-icon *ngIf="icon('links') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('links') }}</h2>
+            <a *ngIf="profile.socialLinks.linkedin"  [href]="profile.socialLinks.linkedin"  target="_blank">LinkedIn</a>
+            <a *ngIf="profile.socialLinks.github"    [href]="profile.socialLinks.github"    target="_blank">GitHub</a>
+            <a *ngIf="profile.socialLinks.portfolio" [href]="profile.socialLinks.portfolio" target="_blank">Portfolio</a>
+          </section>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- ──────────────────────────────────────────────────────────────────
+       TEMPLATE THREE  –  Elegant  (dark sidebar + accent hero band)
+  ────────────────────────────────────────────────────────────────────── -->
+  <ng-template ngSwitchCase="template-three">
+    <div class="resume t3"
+         [style.fontFamily]="profile.font"
+         [style.--t-primary]="profile.primaryColor || '#0f172a'"
+         [style.--t-accent]="profile.accentColor || '#fbbf24'">
+
+      <aside class="t3-sidebar">
+        <!-- Contact -->
+        <div class="contact-block t3-contacts"
+             [class.det-inline]="detailsInline"
+             [class.det-columns]="detailsColumns">
+          <div class="t3-contact-item" *ngIf="profile.phone">
+            <span class="ic-badge t3-ic" [class]="'ic-' + iconShape">
+              <svg viewBox="0 0 16 16"><path d="M3.5 2h3l1 3-1.5 1.5a8 8 0 0 0 3.5 3.5L11 8.5l3 1v3a1 1 0 0 1-1 1C6 14 2 10 2 3.5A1 1 0 0 1 3.5 2z" stroke="#fff" stroke-width="1.1" fill="none"/></svg>
+            </span>
+            <span><a class="hl" data-k="phone" [href]="'tel:' + profile.phone">{{ profile.phone }}</a></span>
+          </div>
+          <div class="t3-contact-item" *ngIf="profile.email">
+            <span class="ic-badge t3-ic" [class]="'ic-' + iconShape">
+              <svg viewBox="0 0 16 16"><path d="M2 4.5A.5.5 0 0 1 2.5 4h11a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-7z" stroke="#fff" stroke-width="1.2" fill="none"/><path d="M2 5l6 4 6-4" stroke="#fff" stroke-width="1.2" fill="none"/></svg>
+            </span>
+            <span><a class="hl" data-k="email" [href]="'mailto:' + profile.email">{{ profile.email }}</a></span>
+          </div>
+          <div class="t3-contact-item" *ngIf="profile.location">
+            <span class="ic-badge t3-ic" [class]="'ic-' + iconShape">
+              <svg viewBox="0 0 16 16"><path d="M8 1.5A4.5 4.5 0 0 0 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6A4.5 4.5 0 0 0 8 1.5z" stroke="#fff" stroke-width="1.2" fill="none"/><circle cx="8" cy="6" r="1.5" fill="#fff"/></svg>
+            </span>
+            <span>{{ profile.location }}</span>
+          </div>
+          <div class="t3-contact-item" *ngIf="profile.socialLinks?.portfolio || profile.socialLinks?.github || profile.socialLinks?.linkedin">
+            <span class="ic-badge t3-ic" [class]="'ic-' + iconShape">
+              <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#fff" stroke-width="1.2" fill="none"/><path d="M2 8h12M8 2a10 10 0 0 1 0 12M8 2a10 10 0 0 0 0 12" stroke="#fff" stroke-width="1" fill="none"/></svg>
+            </span>
+            <span>{{ profile.socialLinks?.portfolio || profile.socialLinks?.github || profile.socialLinks?.linkedin }}</span>
+          </div>
+        </div>
+
+        <div class="t3-section" *ngIf="educationList.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('education') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('education') }}</h3>
+          <div class="t3-edu" *ngFor="let ed of educationList">
+            <p class="t3-degree">{{ eduFirst(ed) }}</p>
+            <p class="t3-meta">{{ eduDates(ed) }}<ng-container *ngIf="ed.location"> · {{ ed.location }}</ng-container></p>
+            <p class="t3-meta">{{ eduSecond(ed) }}</p>
+            <p class="t3-meta" *ngIf="ed.score">{{ ed.score }}</p>
+            <p class="t3-desc" *ngIf="ed.description" [innerHTML]="safe(ed.description)"></p>
+          </div>
+        </div>
+
+        <div class="t3-section" *ngIf="competencyList.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('coreCompetencies') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('coreCompetencies') }}</h3>
+          <ul class="t3-list"><li *ngFor="let c of competencyList">{{ c }}</li></ul>
+        </div>
+
+        <div class="t3-section" *ngIf="skillGroups.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('technicalSkills') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('technicalSkills') }}</h3>
+          <ng-container *ngTemplateOutlet="skillsTpl"></ng-container>
+        </div>
+
+        <div class="t3-section" *ngIf="interestList.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('interests') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('interests') }}</h3>
+          <ul class="t3-list"><li *ngFor="let i of interestList">{{ i }}</li></ul>
+        </div>
+
+        <div class="t3-social" *ngIf="profile.socialLinks?.github || profile.socialLinks?.linkedin || profile.socialLinks?.twitter">
+          <a *ngIf="profile.socialLinks.github"   [href]="profile.socialLinks.github"   target="_blank">GH</a>
+          <a *ngIf="profile.socialLinks.linkedin" [href]="profile.socialLinks.linkedin" target="_blank">in</a>
+          <a *ngIf="profile.socialLinks.twitter"  [href]="profile.socialLinks.twitter"  target="_blank">X</a>
+        </div>
+      </aside>
+
+      <main class="t3-main">
+        <div class="res-pb" data-page-break *ngIf="pbActive" [style.order]="ord('pageBreak')"></div>
+        <header class="t3-hero" [style.textAlign]="headerCenter ? 'center' : null">
+          <div [class.name-sameline]="sameLine">
+            <h1 class="res-name" [style.fontWeight]="nameWeight">{{ profile.fullName }}</h1>
+            <p class="res-title" [style.fontWeight]="titleWeight">{{ profile.professionalTitle }}</p>
+          </div>
+        </header>
+        <ng-container *ngTemplateOutlet="sumHeadTpl"></ng-container>
+
+        <section class="t3-body" *ngIf="!sumInHeader && hasAbout" [style.order]="ord('aboutMe')"><h2 class="sec-h sum-h"><app-section-icon *ngIf="icon('aboutMe') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('aboutMe') }}</h2><p class="t3-about" [innerHTML]="safe(profile.aboutMe)"></p></section>
+
+        <section class="t3-body" *ngIf="expList.length" [style.order]="ord('experience')">
+          <h2 class="sec-h"><app-section-icon *ngIf="icon('experience') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('experience') }}</h2>
+          <div class="t3-timeline">
+            <div class="t3-item" *ngFor="let e of expList">
+              <span class="t3-dot"></span>
+              <div>
+                <p class="t3-exp-meta"><span class="dt-s">{{ formatDuration(e) }}</span><ng-container *ngIf="expSecond(e)"> | <span class="sub-s">{{ expSecond(e) }}</span></ng-container>, <span class="loc-s">{{ e.location }}</span></p>
+                <h4>{{ expFirst(e) }}</h4>
+                <p class="t3-desc" [innerHTML]="safe(e.description)"></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="t3-body" [style.order]="ord('declaration')"><ng-container *ngTemplateOutlet="declTpl"></ng-container></section>
+      </main>
+    </div>
+  </ng-template>
+
+
+  <!-- TEMPLATE FOUR – Minimal (single column, black rules) -->
+  <ng-template ngSwitchCase="template-four">
+    <div class="resume t4" [style.fontFamily]="profile.font" [style.--t-accent]="profile.accentColor || '#111827'">
+      <div class="res-pb" data-page-break *ngIf="pbActive" [style.order]="ord('pageBreak')"></div>
+      <header class="t4-head">
+        <h1 class="res-name" [style.fontWeight]="nameWeight">{{ profile.fullName }}</h1>
+        <p class="t4-title res-title" [style.fontWeight]="titleWeight">{{ profile.professionalTitle }}</p>
+        <div class="t4-contact"><span class="cx" *ngFor="let c of contacts"><app-section-icon *ngIf="sep === 'icon'" class="cx-ic" [name]="c.icon" [size]="11"></app-section-icon><ng-container *ngIf="sep === 'bullet'">• </ng-container><ng-container *ngIf="sep === 'bar'">| </ng-container><ng-container *ngIf="c.href; else pt1"><a class="hl" [attr.data-k]="c.kind" [href]="c.href" target="_blank" rel="noopener">{{ c.text }}</a></ng-container><ng-template #pt1>{{ c.text }}</ng-template></span></div>
+      </header>
+      <ng-container *ngTemplateOutlet="sumHeadTpl"></ng-container>
+
+      <section class="t4-sec" *ngIf="hasAbout && !sumInHeader" [style.order]="ord('aboutMe')">
+        <h2 class="sec-h sum-h"><app-section-icon *ngIf="icon('aboutMe') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('aboutMe') }}</h2>
+        <div class="t4-text" [innerHTML]="safe(profile.aboutMe)"></div>
+      </section>
+
+      <section class="t4-sec" *ngIf="expList.length" [style.order]="ord('experience')">
+        <h2 class="sec-h"><app-section-icon *ngIf="icon('experience') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('experience') }}</h2>
+        <div class="t4-item" *ngFor="let e of expList">
+          <div class="t4-row"><b class="res-entry-head">{{ expFirst(e) }}</b><span class="res-dates">{{ formatDuration(e) }}</span></div>
+          <div class="t4-row t4-sub" *ngIf="educationList.length"><i class="sub-s">{{ expSecond(e) }}</i><span class="loc-s">{{ e.location }}</span></div>
+          <div class="t4-text" [innerHTML]="safe(e.description)"></div>
+        </div>
+      </section>
+
+      <section class="t4-sec" *ngIf="educationList.length" [style.order]="ord('education')">
+        <h2 class="sec-h"><app-section-icon *ngIf="icon('education') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('education') }}</h2>
+        <div class="t4-item" *ngFor="let ed of educationList">
+          <div class="t4-row"><b class="res-entry-head">{{ eduFirst(ed) }}</b><span class="res-dates">{{ eduDates(ed) }}</span></div>
+          <div class="t4-row t4-sub" *ngIf="skillGroups.length"><i class="sub-s">{{ eduSecond(ed) }}</i><span class="loc-s">{{ ed.location }}</span></div>
+        </div>
+      </section>
+
+      <section class="t4-sec" *ngIf="skillList.length" [style.order]="ord('technicalSkills')">
+        <h2 class="sec-h"><app-section-icon *ngIf="icon('technicalSkills') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('technicalSkills') }}</h2>
+        <ng-container *ngTemplateOutlet="skillsTpl"></ng-container>
+      </section>
+      <section class="t4-sec" *ngIf="competencyList.length" [style.order]="ord('coreCompetencies')">
+        <h2 class="sec-h"><app-section-icon *ngIf="icon('coreCompetencies') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('coreCompetencies') }}</h2>
+        <ul class="bul bul-2"><li *ngFor="let x of competencyList">{{ x }}</li></ul>
+      </section>
+      <section class="t4-sec" *ngIf="certList.length" [style.order]="ord('certificates')">
+        <h2 class="sec-h"><app-section-icon *ngIf="icon('certificates') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('certificates') }}</h2>
+        <ul class="bul bul-2"><li *ngFor="let x of certList">{{ x }}</li></ul>
+      </section>
+      <section class="t4-sec" *ngIf="langList.length" [style.order]="ord('languages')">
+        <h2 class="sec-h"><app-section-icon *ngIf="icon('languages') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('languages') }}</h2>
+        <ul class="bul bul-2"><li *ngFor="let l of langList">{{ l.name }} <span class="dots dots-sm" *ngIf="+l.level > 0"><i *ngFor="let d of dotScale" [class.on]="d <= +l.level"></i></span></li></ul>
+      </section>
+      <section class="t4-sec" *ngIf="interestList.length" [style.order]="ord('interests')">
+        <h2 class="sec-h"><app-section-icon *ngIf="icon('interests') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('interests') }}</h2>
+        <ul class="bul bul-2"><li *ngFor="let x of interestList">{{ x }}</li></ul>
+      </section>
+      <ng-container *ngTemplateOutlet="declTpl"></ng-container>
+    </div>
+  </ng-template>
+
+  <!-- TEMPLATE FIVE – Professional (grey header, photo, centred section bars) -->
+  <ng-template ngSwitchCase="template-five">
+    <div class="resume t5" [style.fontFamily]="profile.font"
+         [style.--t-primary]="profile.primaryColor || '#e5e7eb'" [style.--t-accent]="profile.accentColor || '#374151'">
+      <header class="t5-head">
+        <img *ngIf="profile.photo" class="t5-photo" [src]="profile.photo" alt="">
+        <div class="t5-id">
+          <h1 class="res-name" [style.fontWeight]="nameWeight">{{ profile.fullName }}</h1>
+          <p class="t5-title res-title" [style.fontWeight]="titleWeight">{{ profile.professionalTitle }}</p>
+          <div class="t5-contact"><span class="cx" *ngFor="let c of contacts"><app-section-icon *ngIf="sep === 'icon'" class="cx-ic" [name]="c.icon" [size]="10"></app-section-icon><ng-container *ngIf="sep === 'bullet'">• </ng-container><ng-container *ngIf="sep === 'bar'">| </ng-container><ng-container *ngIf="c.href; else pt2"><a class="hl" [attr.data-k]="c.kind" [href]="c.href" target="_blank" rel="noopener">{{ c.text }}</a></ng-container><ng-template #pt2>{{ c.text }}</ng-template></span></div>
+        </div>
+      </header>
+      <ng-container *ngTemplateOutlet="sumHeadTpl; context: { hc: 't5-h' }"></ng-container>
+      <div class="t5-body">
+        <div class="res-pb" data-page-break *ngIf="pbActive" [style.order]="ord('pageBreak')"></div>
+        <section class="t5-sec" *ngIf="hasAbout && !sumInHeader" [style.order]="ord('aboutMe')">
+          <h2 class="t5-h sum-h"><span><app-section-icon *ngIf="icon('aboutMe') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('aboutMe') }}</span></h2>
+          <div class="t5-text" [innerHTML]="safe(profile.aboutMe)"></div>
+        </section>
+
+        <section class="t5-sec" *ngIf="expList.length" [style.order]="ord('experience')">
+          <h2 class="t5-h"><span><app-section-icon *ngIf="icon('experience') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('experience') }}</span></h2>
+          <div class="t5-item" *ngFor="let e of expList">
+            <div class="t5-when res-dates"><span class="w-date">{{ formatDuration(e) }}</span><span class="w-loc">{{ e.location }}</span></div>
+            <div class="t5-what">
+              <div class="t5-org"><b class="res-entry-head">{{ expFirst(e) }}</b><span class="role-sub">{{ expSecond(e) }}</span></div>
+              <div class="t5-text" [innerHTML]="safe(e.description)"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="t5-sec" *ngIf="educationList.length" [style.order]="ord('education')">
+          <h2 class="t5-h"><span><app-section-icon *ngIf="icon('education') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('education') }}</span></h2>
+          <div class="t5-item" *ngFor="let ed of educationList">
+            <div class="t5-when res-dates"><span class="w-date">{{ eduDates(ed) }}</span><span class="w-loc">{{ ed.location }}</span></div>
+            <div class="t5-what">
+              <div class="t5-org" *ngIf="skillGroups.length"><b class="res-entry-head">{{ eduFirst(ed) }}</b><span class="role-sub">{{ eduSecond(ed) }}</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="t5-sec" *ngIf="skillList.length" [style.order]="ord('technicalSkills')">
+          <h2 class="t5-h"><span><app-section-icon *ngIf="icon('technicalSkills') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('technicalSkills') }}</span></h2>
+          <ng-container *ngTemplateOutlet="skillsTpl"></ng-container>
+        </section>
+        <section class="t5-sec" *ngIf="competencyList.length" [style.order]="ord('coreCompetencies')">
+          <h2 class="t5-h"><span><app-section-icon *ngIf="icon('coreCompetencies') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('coreCompetencies') }}</span></h2>
+          <ul class="bul bul-3"><li *ngFor="let x of competencyList">{{ x }}</li></ul>
+        </section>
+        <section class="t5-sec" *ngIf="langList.length" [style.order]="ord('languages')">
+          <h2 class="t5-h"><span><app-section-icon *ngIf="icon('languages') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('languages') }}</span></h2>
+          <ul class="bul bul-3 bul-lang"><li *ngFor="let l of langList"><span>{{ l.name }}</span> <span class="dots" *ngIf="+l.level > 0"><i *ngFor="let d of dotScale" [class.on]="d <= +l.level"></i></span></li></ul>
+        </section>
+        <section class="t5-sec" *ngIf="certList.length" [style.order]="ord('certificates')">
+          <h2 class="t5-h"><span><app-section-icon *ngIf="icon('certificates') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('certificates') }}</span></h2>
+          <ul class="bul bul-3"><li *ngFor="let x of certList">{{ x }}</li></ul>
+        </section>
+        <section class="t5-sec" *ngIf="interestList.length" [style.order]="ord('interests')">
+          <h2 class="t5-h"><span><app-section-icon *ngIf="icon('interests') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('interests') }}</span></h2>
+          <ul class="bul bul-3"><li *ngFor="let x of interestList">{{ x }}</li></ul>
+        </section>
+        <ng-container *ngTemplateOutlet="declTpl; context: { hc: 't5-h' }"></ng-container>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- TEMPLATE SIX – Botanical (white page, ruled headings, leaf strip on the right) -->
+  <ng-template ngSwitchCase="template-six">
+    <div class="resume t6" [style.fontFamily]="profile.font" [style.--t-accent]="profile.accentColor || '#1f5a36'">
+      <div class="t6-leaf"></div>
+      <div class="t6-inner">
+        <div class="res-pb" data-page-break *ngIf="pbActive" [style.order]="ord('pageBreak')"></div>
+        <header class="t6-head">
+          <div class="t6-id">
+            <h1 class="res-name" [style.fontWeight]="nameWeight">{{ profile.fullName }}</h1>
+            <p class="t6-title res-title" [style.fontWeight]="titleWeight">{{ profile.professionalTitle }}</p>
+            <div class="t6-contact"><span class="cx" *ngFor="let c of contacts"><app-section-icon *ngIf="sep === 'icon'" class="cx-ic" [name]="c.icon" [size]="9"></app-section-icon><ng-container *ngIf="sep === 'bullet'">• </ng-container><ng-container *ngIf="sep === 'bar'">| </ng-container><ng-container *ngIf="c.href; else pt3"><a class="hl" [attr.data-k]="c.kind" [href]="c.href" target="_blank" rel="noopener">{{ c.text }}</a></ng-container><ng-template #pt3>{{ c.text }}</ng-template></span></div>
+          </div>
+          <img *ngIf="profile.photo" class="t6-photo" [src]="profile.photo" alt="">
+        </header>
+        <ng-container *ngTemplateOutlet="sumHeadTpl"></ng-container>
+
+        <section class="t6-sec" *ngIf="hasAbout && !sumInHeader" [style.order]="ord('aboutMe')">
+          <h2 class="sec-h sum-h"><app-section-icon *ngIf="icon('aboutMe') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('aboutMe') }}</h2>
+          <div class="t6-text" [innerHTML]="safe(profile.aboutMe)"></div>
+        </section>
+
+        <section class="t6-sec" *ngIf="expList.length" [style.order]="ord('experience')">
+          <h2 class="sec-h"><app-section-icon *ngIf="icon('experience') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('experience') }}</h2>
+          <div class="t6-item" *ngFor="let e of expList">
+            <div class="t6-row"><b class="res-entry-head">{{ expFirst(e) }}</b><span class="role-sub" *ngIf="expSecond(e)">{{ expSecond(e) }}</span><span class="res-dates">{{ formatDuration(e) }}</span></div>
+            <div class="t6-row t6-loc" *ngIf="e.location"><span></span><span class="loc-s">{{ e.location }}</span></div>
+            <div class="t6-text" [innerHTML]="safe(e.description)"></div>
+          </div>
+        </section>
+
+        <section class="t6-sec" *ngIf="educationList.length" [style.order]="ord('education')">
+          <h2 class="sec-h"><app-section-icon *ngIf="icon('education') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('education') }}</h2>
+          <div class="t6-item" *ngFor="let ed of educationList">
+            <div class="t6-row"><span><b class="res-entry-head">{{ eduFirst(ed) }}</b><span class="role-sub" *ngIf="eduSecond(ed)">{{ eduSecond(ed) }}</span></span><span class="res-dates">{{ eduDates(ed) }}</span></div>
+            <div class="t6-row t6-loc" *ngIf="ed.location"><span></span><span class="loc-s">{{ ed.location }}</span></div>
+          </div>
+        </section>
+
+        <section class="t6-sec" *ngIf="certList.length" [style.order]="ord('certificates')">
+          <h2 class="sec-h"><app-section-icon *ngIf="icon('certificates') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('certificates') }}</h2>
+          <div class="t6-inline" *ngIf="langList.length"><ng-container *ngFor="let x of certList; let last = last">{{ x }}<span *ngIf="!last"> • </span></ng-container></div>
+        </section>
+
+        <section class="t6-sec" *ngIf="langList.length" [style.order]="ord('languages')">
+          <h2 class="sec-h"><app-section-icon *ngIf="icon('languages') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('languages') }}</h2>
+          <div class="t6-inline" *ngIf="skillGroups.length"><ng-container *ngFor="let l of langList; let last = last">{{ l.name }}<span *ngIf="!last"> • </span></ng-container></div>
+        </section>
+
+        <section class="t6-sec" *ngIf="skillGroups.length || competencyList.length" [style.order]="ord('technicalSkills')">
+          <h2 class="sec-h"><app-section-icon *ngIf="icon('technicalSkills') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('technicalSkills') }}</h2>
+          <div class="t6-skills">
+            <ng-container *ngTemplateOutlet="skillsTpl"></ng-container>
+            <div *ngIf="competencyList.length"><b>{{ label('coreCompetencies') }}</b><p>{{ competencyList.join(', ') }}</p></div>
+          </div>
+        </section>
+
+        <section class="t6-sec" *ngIf="interestList.length" [style.order]="ord('interests')">
+          <h2 class="sec-h"><app-section-icon *ngIf="icon('interests') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('interests') }}</h2>
+          <div class="t6-inline">{{ interestList.join(' • ') }}</div>
+        </section>
+        <ng-container *ngTemplateOutlet="declTpl"></ng-container>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- TEMPLATE SEVEN – Executive (dark header band, grey section bars with icons) -->
+  <ng-template ngSwitchCase="template-seven">
+    <div class="resume t7" [style.fontFamily]="profile.font"
+         [style.--t-primary]="profile.primaryColor || '#1b3448'" [style.--t-accent]="profile.accentColor || '#1b3448'">
+      <header class="t7-head">
+        <div class="t7-nameline">
+          <h1 class="res-name" [style.fontWeight]="nameWeight">{{ profile.fullName }}</h1>
+          <span class="t7-title res-title" [style.fontWeight]="titleWeight">{{ profile.professionalTitle }}</span>
+        </div>
+        <div class="t7-contact"><span class="cx" *ngFor="let c of contacts"><app-section-icon *ngIf="sep === 'icon'" class="cx-ic" [name]="c.icon" [size]="10"></app-section-icon><ng-container *ngIf="sep === 'bullet'">• </ng-container><ng-container *ngIf="sep === 'bar'">| </ng-container><ng-container *ngIf="c.href; else pt4"><a class="hl" [attr.data-k]="c.kind" [href]="c.href" target="_blank" rel="noopener">{{ c.text }}</a></ng-container><ng-template #pt4>{{ c.text }}</ng-template></span></div>
+      </header>
+      <ng-container *ngTemplateOutlet="sumHeadTpl; context: { hc: 't7-h' }"></ng-container>
+      <div class="t7-body">
+        <div class="res-pb" data-page-break *ngIf="pbActive" [style.order]="ord('pageBreak')"></div>
+        <section class="t7-sec" *ngIf="hasAbout && !sumInHeader" [style.order]="ord('aboutMe')">
+          <h2 class="t7-h sum-h"><span><app-section-icon *ngIf="icon('aboutMe') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('aboutMe') }}</span></h2>
+          <div class="t7-text" [innerHTML]="safe(profile.aboutMe)"></div>
+        </section>
+
+        <section class="t7-sec" *ngIf="expList.length" [style.order]="ord('experience')">
+          <h2 class="t7-h"><span><app-section-icon *ngIf="icon('experience') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('experience') }}</span></h2>
+          <div class="t7-item" *ngFor="let e of expList">
+            <div class="t7-when res-dates"><span class="w-date">{{ formatDuration(e) }}</span><span class="w-loc">{{ e.location }}</span></div>
+            <div class="t7-what">
+              <div class="t7-org"><b class="res-entry-head">{{ expFirst(e) }}</b><span class="role-sub">{{ expSecond(e) }}</span></div>
+              <div class="t7-text" [innerHTML]="safe(e.description)"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="t7-sec" *ngIf="educationList.length" [style.order]="ord('education')">
+          <h2 class="t7-h"><span><app-section-icon *ngIf="icon('education') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('education') }}</span></h2>
+          <div class="t7-item" *ngFor="let ed of educationList">
+            <div class="t7-when res-dates"><span class="w-date">{{ eduDates(ed) }}</span><span class="w-loc">{{ ed.location }}</span></div>
+            <div class="t7-what">
+              <div class="t7-org" *ngIf="skillGroups.length"><b class="res-entry-head">{{ eduFirst(ed) }}</b><span class="role-sub" *ngIf="eduSecond(ed)">{{ eduSecond(ed) }}</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="t7-sec" *ngIf="skillList.length" [style.order]="ord('technicalSkills')">
+          <h2 class="t7-h"><span><app-section-icon *ngIf="icon('technicalSkills') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('technicalSkills') }}</span></h2>
+          <ng-container *ngTemplateOutlet="skillsTpl"></ng-container>
+        </section>
+        <section class="t7-sec" *ngIf="competencyList.length" [style.order]="ord('coreCompetencies')">
+          <h2 class="t7-h"><span><app-section-icon *ngIf="icon('coreCompetencies') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('coreCompetencies') }}</span></h2>
+          <ul class="bul bul-3"><li *ngFor="let x of competencyList">{{ x }}</li></ul>
+        </section>
+        <section class="t7-sec" *ngIf="langList.length" [style.order]="ord('languages')">
+          <h2 class="t7-h"><span><app-section-icon *ngIf="icon('languages') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('languages') }}</span></h2>
+          <ul class="bul bul-3 bul-lang"><li *ngFor="let l of langList"><span>{{ l.name }}</span> <span class="dots" *ngIf="+l.level > 0"><i *ngFor="let d of dotScale" [class.on]="d <= +l.level"></i></span></li></ul>
+        </section>
+        <section class="t7-sec" *ngIf="certList.length" [style.order]="ord('certificates')">
+          <h2 class="t7-h"><span><app-section-icon *ngIf="icon('certificates') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('certificates') }}</span></h2>
+          <ul class="bul bul-3"><li *ngFor="let x of certList">{{ x }}</li></ul>
+        </section>
+        <section class="t7-sec" *ngIf="interestList.length" [style.order]="ord('interests')">
+          <h2 class="t7-h"><span><app-section-icon *ngIf="icon('interests') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('interests') }}</span></h2>
+          <ul class="bul bul-3"><li *ngFor="let x of interestList">{{ x }}</li></ul>
+        </section>
+        <ng-container *ngTemplateOutlet="declTpl; context: { hc: 't7-h' }"></ng-container>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- TEMPLATE EIGHT – Clean (photo right, icon contacts, navy section bars) -->
+  <ng-template ngSwitchCase="template-eight">
+    <div class="resume t8" [style.fontFamily]="profile.font"
+         [style.--t-primary]="profile.primaryColor || '#1e3a5f'" [style.--t-accent]="profile.accentColor || '#1e3a5f'">
+      <header class="t8-head">
+        <div class="t8-id">
+          <div class="t8-nameline">
+            <h1 class="res-name" [style.fontWeight]="nameWeight">{{ profile.fullName }}</h1>
+            <span class="t8-title res-title" [style.fontWeight]="titleWeight">{{ profile.professionalTitle }}</span>
+          </div>
+          <div class="t8-contact"><span class="cx" *ngFor="let c of contacts"><app-section-icon *ngIf="sep === 'icon'" class="cx-ic" [name]="c.icon" [size]="9"></app-section-icon><ng-container *ngIf="sep === 'bullet'">• </ng-container><ng-container *ngIf="sep === 'bar'">| </ng-container><ng-container *ngIf="c.href; else pt5"><a class="hl" [attr.data-k]="c.kind" [href]="c.href" target="_blank" rel="noopener">{{ c.text }}</a></ng-container><ng-template #pt5>{{ c.text }}</ng-template></span></div>
+        </div>
+        <img *ngIf="profile.photo" class="t8-photo" [src]="profile.photo" alt="">
+      </header>
+      <ng-container *ngTemplateOutlet="sumHeadTpl; context: { hc: 't8-h' }"></ng-container>
+      <div class="t8-body">
+        <div class="res-pb" data-page-break *ngIf="pbActive" [style.order]="ord('pageBreak')"></div>
+        <section class="t8-sec" *ngIf="hasAbout && !sumInHeader" [style.order]="ord('aboutMe')">
+          <h2 class="t8-h sum-h"><span><app-section-icon *ngIf="icon('aboutMe') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('aboutMe') }}</span></h2>
+          <div class="t8-text" [innerHTML]="safe(profile.aboutMe)"></div>
+        </section>
+
+        <section class="t8-sec" *ngIf="expList.length" [style.order]="ord('experience')">
+          <h2 class="t8-h"><span><app-section-icon *ngIf="icon('experience') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('experience') }}</span></h2>
+          <div class="t8-item" *ngFor="let e of expList">
+            <div class="t8-when res-dates"><span class="w-date">{{ formatDuration(e) }}</span><span class="w-loc">{{ e.location }}</span></div>
+            <div class="t8-what">
+              <div class="t8-org"><b class="res-entry-head">{{ expFirst(e) }}</b><span class="role-sub"><i>{{ expSecond(e) }}</i></span></div>
+              <div class="t8-text" [innerHTML]="safe(e.description)"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="t8-sec" *ngIf="educationList.length" [style.order]="ord('education')">
+          <h2 class="t8-h"><span><app-section-icon *ngIf="icon('education') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('education') }}</span></h2>
+          <div class="t8-item" *ngFor="let ed of educationList">
+            <div class="t8-when res-dates"><span class="w-date">{{ eduDates(ed) }}</span><span class="w-loc">{{ ed.location }}</span></div>
+            <div class="t8-what">
+              <div class="t8-org" *ngIf="skillGroups.length"><b class="res-entry-head">{{ eduFirst(ed) }}</b><span class="role-sub" *ngIf="eduSecond(ed)"><i>{{ eduSecond(ed) }}</i></span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="t8-sec" *ngIf="skillList.length" [style.order]="ord('technicalSkills')">
+          <h2 class="t8-h"><span><app-section-icon *ngIf="icon('technicalSkills') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('technicalSkills') }}</span></h2>
+          <ng-container *ngTemplateOutlet="skillsTpl"></ng-container>
+        </section>
+        <section class="t8-sec" *ngIf="competencyList.length" [style.order]="ord('coreCompetencies')">
+          <h2 class="t8-h"><span><app-section-icon *ngIf="icon('coreCompetencies') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('coreCompetencies') }}</span></h2>
+          <ul class="bul bul-3"><li *ngFor="let x of competencyList">{{ x }}</li></ul>
+        </section>
+        <section class="t8-sec" *ngIf="langList.length" [style.order]="ord('languages')">
+          <h2 class="t8-h"><span><app-section-icon *ngIf="icon('languages') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('languages') }}</span></h2>
+          <ul class="bul bul-3 bul-lang"><li *ngFor="let l of langList"><span>{{ l.name }}</span> <span class="dots" *ngIf="+l.level > 0"><i *ngFor="let d of dotScale" [class.on]="d <= +l.level"></i></span></li></ul>
+        </section>
+        <section class="t8-sec" *ngIf="certList.length" [style.order]="ord('certificates')">
+          <h2 class="t8-h"><span><app-section-icon *ngIf="icon('certificates') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('certificates') }}</span></h2>
+          <ul class="bul bul-3"><li *ngFor="let x of certList">{{ x }}</li></ul>
+        </section>
+        <section class="t8-sec" *ngIf="interestList.length" [style.order]="ord('interests')">
+          <h2 class="t8-h"><span><app-section-icon *ngIf="icon('interests') as ic" class="h-ic" [name]="ic" [size]="14"></app-section-icon>{{ label('interests') }}</span></h2>
+          <ul class="bul bul-3"><li *ngFor="let x of interestList">{{ x }}</li></ul>
+        </section>
+        <ng-container *ngTemplateOutlet="declTpl; context: { hc: 't8-h' }"></ng-container>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- ──────────────────────────────────────────────────────────────────
+       TEMPLATE NINE – Creative (navy sidebar + floating accent header + timeline)
+  ────────────────────────────────────────────────────────────────────── -->
+  <ng-template ngSwitchCase="template-nine">
+    <div class="resume t9"
+         [style.fontFamily]="profile.font"
+         [style.--t-primary]="profile.primaryColor || '#16233f'"
+         [style.--t-accent]="profile.accentColor || '#f7d747'">
+
+      <aside class="t9-side">
+        <ul class="t9-contacts">
+          <li *ngIf="profile.phone"><span class="t9-ic"><svg viewBox="0 0 16 16"><path d="M3.5 2h3l1 3-1.5 1.5a8 8 0 0 0 3.5 3.5L11 8.5l3 1v3a1 1 0 0 1-1 1C6 14 2 10 2 3.5A1 1 0 0 1 3.5 2z" fill="currentColor"/></svg></span><a class="hl" data-k="phone" [href]="'tel:' + profile.phone">{{ profile.phone }}</a></li>
+          <li *ngIf="profile.email"><span class="t9-ic"><svg viewBox="0 0 16 16"><path d="M2 4.5A.5.5 0 0 1 2.5 4h11a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-7z" fill="currentColor"/><path d="M2 5l6 4 6-4" stroke="var(--t-accent)" stroke-width="1.3" fill="none"/></svg></span><a class="hl" data-k="email" [href]="'mailto:' + profile.email">{{ profile.email }}</a></li>
+          <li *ngIf="profile.socialLinks?.portfolio"><span class="t9-ic"><svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M1 13h14" stroke="currentColor" stroke-width="1.5"/></svg></span><a class="t9-u" [href]="profile.socialLinks.portfolio" target="_blank">{{ profile.socialLinks.portfolio }}</a></li>
+          <li *ngIf="profile.location"><span class="t9-ic"><svg viewBox="0 0 16 16"><path d="M8 1.5A4.5 4.5 0 0 0 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6A4.5 4.5 0 0 0 8 1.5z" fill="currentColor"/><circle cx="8" cy="6" r="1.6" fill="var(--t-accent)"/></svg></span><span>{{ profile.location }}</span></li>
+        </ul>
+
+        <div class="t9-sec" *ngIf="educationList.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('education') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('education') }}</h3>
+          <div class="t9-edu" *ngFor="let ed of educationList">
+            <p class="t9-degree">{{ eduFirst(ed) }}<span class="t9-dates" *ngIf="eduDates(ed)"> {{ eduDates(ed) }}</span></p>
+            <p class="t9-meta">{{ eduSecond(ed) }}<ng-container *ngIf="ed.location"> · {{ ed.location }}</ng-container></p>
+            <p class="t9-meta" *ngIf="ed.score">{{ ed.score }}</p>
+            <p class="t9-meta" *ngIf="ed.description" [innerHTML]="safe(ed.description)"></p>
+          </div>
+        </div>
+
+        <div class="t9-sec" *ngIf="competencyList.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('coreCompetencies') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('coreCompetencies') }}</h3>
+          <ul class="t9-list"><li *ngFor="let c of competencyList">{{ c }}</li></ul>
+        </div>
+
+        <div class="t9-sec" *ngIf="skillGroups.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('technicalSkills') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('technicalSkills') }}</h3>
+          <ul class="t9-list"><li *ngFor="let g of skillGroups"><ng-container *ngIf="g.category?.trim()">{{ g.category }}<ng-container *ngIf="itemsText(g)">: </ng-container></ng-container>{{ itemsText(g) }}</li></ul>
+        </div>
+
+        <div class="t9-sec" *ngIf="interestList.length">
+          <h3 class="sec-h"><app-section-icon *ngIf="icon('interests') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('interests') }}</h3>
+          <div class="t9-interests">
+            <span *ngFor="let i of interestList" [attr.title]="i">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path [attr.d]="interestIcon(i)"/></svg>
+              <span class="t9-sr">{{ i }}</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="t9-foot" *ngIf="profile.socialLinks?.github || profile.socialLinks?.linkedin || profile.socialLinks?.twitter || profile.socialLinks?.portfolio">
+          <div class="t9-social">
+            <a *ngIf="profile.socialLinks.github"   [href]="profile.socialLinks.github"   target="_blank" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.3 2.8.1 3.2.8.8 1.3 1.9 1.3 3.1 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg></a>
+            <a *ngIf="profile.socialLinks.linkedin" [href]="profile.socialLinks.linkedin" target="_blank" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M20.4 20.5h-3.6v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H9.3V9h3.4v1.6c.5-.9 1.6-1.8 3.4-1.8 3.6 0 4.3 2.4 4.3 5.5v6.2zM5.3 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM7.1 20.5H3.6V9h3.5v11.5z"/></svg></a>
+            <a *ngIf="profile.socialLinks.twitter"  [href]="profile.socialLinks.twitter"  target="_blank" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.2 2.3h3.3l-7.2 8.3 8.5 11.2h-6.7l-5.2-6.8-6 6.8H1.6l7.7-8.8L1.2 2.3H8l4.7 6.2 5.5-6.2zm-1.2 17.5h1.8L7 4.1H5l12 15.7z"/></svg></a>
+          </div>
+          <a class="t9-u" *ngIf="profile.socialLinks?.portfolio" [href]="profile.socialLinks.portfolio" target="_blank">{{ profile.socialLinks.portfolio }}</a>
+        </div>
+      </aside>
+
+      <main class="t9-main">
+        <div class="res-pb" data-page-break *ngIf="pbActive" [style.order]="ord('pageBreak')"></div>
+        <header class="t9-hero" [class.name-sameline]="sameLine" [style.textAlign]="headerCenter ? 'center' : null" [style.justifyContent]="headerCenter ? 'center' : null">
+          <h1 class="res-name"><span [style.fontWeight]="nameWeight">{{ nameParts[0] }}</span><span class="t9-last" *ngIf="nameParts[1]"> {{ nameParts[1] }}</span></h1>
+          <p class="res-title" [style.fontWeight]="titleWeight">{{ profile.professionalTitle }}</p>
+        </header>
+        <ng-container *ngTemplateOutlet="sumHeadTpl"></ng-container>
+
+        <section class="t9-body" *ngIf="!sumInHeader && hasAbout" [style.order]="ord('aboutMe')">
+          <h2 class="sec-h sum-h"><app-section-icon *ngIf="icon('aboutMe') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('aboutMe') }}</h2>
+          <div class="t9-about" [innerHTML]="safe(profile.aboutMe)"></div>
+        </section>
+
+        <section class="t9-body" *ngIf="expList.length" [style.order]="ord('experience')">
+          <h2 class="sec-h"><app-section-icon *ngIf="icon('experience') as ic" class="h-ic" [name]="ic" [size]="16"></app-section-icon>{{ label('experience') }}</h2>
+          <div class="t9-timeline">
+            <div class="t9-item" *ngFor="let e of expList">
+              <span class="t9-dot"></span>
+              <p class="t9-when dt-s">{{ formatDuration(e) }}</p>
+              <p class="t9-where"><span class="sub-s">{{ expSecond(e) }}</span><ng-container *ngIf="e.location"> | <span class="loc-s">{{ e.location }}</span></ng-container></p>
+              <h4 class="t9-role">{{ expFirst(e) }}</h4>
+              <div class="t9-desc" [innerHTML]="safe(e.description)"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="t9-body" [style.order]="ord('declaration')"><ng-container *ngTemplateOutlet="declTpl"></ng-container></section>
+      </main>
+    </div>
+  </ng-template>
+
+  <!-- ──────────────────────────────────────────────────────────────────
+       FUTURE templates — add more <ng-template ngSwitchCase="template-four"> here
+  ────────────────────────────────────────────────────────────────────── -->
+  <ng-template ngSwitchDefault>
+    <p style="padding:2rem;color:#888">Unknown template: {{ profile.template }}</p>
+  </ng-template>
+
+</ng-container>
+
+<footer class="resume-footer" *ngIf="showFooter && footerSlots as fs">
+  <span class="ft-l">{{ fs.left }}</span>
+  <span class="ft-c">{{ fs.center }}</span>
+  <span class="ft-r">{{ fs.right }}</span>
+</footer>
+</div>

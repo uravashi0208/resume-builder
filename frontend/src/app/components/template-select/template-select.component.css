@@ -1,0 +1,8 @@
+.template-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.template-card { overflow: hidden; cursor: pointer; box-shadow: var(--shadow-sm); transition: transform var(--t-med), border-color var(--t-med), box-shadow var(--t-med); }
+.template-card:hover { transform: translateY(-4px); border-color: var(--border-brand); box-shadow: var(--shadow-md); }
+.thumb-frame { position: relative; height: 320px; overflow: hidden; background: var(--bg-subtle); }
+.thumb-scale { transform: scale(.38); transform-origin: top left; width: 263%; pointer-events: none; }
+.template-card .card-title { padding: 1rem 1rem .25rem; border: 0; }
+.template-card .btn-add { width: calc(100% - 2rem); margin: .5rem 1rem 1rem; }
+.template-card:hover .btn-add { background: var(--brand); color: var(--on-brand); border-color: var(--brand); }

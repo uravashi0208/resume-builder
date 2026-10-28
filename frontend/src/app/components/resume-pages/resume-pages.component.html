@@ -1,0 +1,38 @@
+<div class="pages-host" #host
+     [style.--pw]="fmt.wMm + 'mm'" [style.--ph]="fmt.hMm + 'mm'">
+
+  <!-- hidden natural-size copy: only used to measure where pages can be split -->
+  <div class="measure" #measure [style.width.px]="pageW" aria-hidden="true">
+    <app-resume [profile]="profile" [showFooter]="false"></app-resume>
+  </div>
+
+  <div class="scaler" [style.width.px]="pageW * scale" [style.height.px]="totalHeight * scale">
+    <div class="stack" [style.width.px]="pageW" [style.transform]="'scale(' + scale + ')'">
+
+      <div class="page" *ngFor="let pg of pages; let i = index"
+           [style.width.px]="pageW" [style.height.px]="pageH"
+           [style.background-color]="pageBg" [style.background-image]="pageBgImg">
+
+        <div class="underlay" *ngFor="let u of underlays"
+             [style.left.px]="u.left" [style.width.px]="u.width"
+             [style.background-color]="u.bg" [style.background-image]="u.img"></div>
+
+        <div class="viewport" [style.top.px]="pg.top" [style.height.px]="pg.height">
+          <div class="content" [style.width.px]="pageW" [style.top.px]="-round(pg.offset)">
+            <app-resume [profile]="profile" [showFooter]="false" [pageNo]="i + 1" [pageTotal]="pages.length"></app-resume>
+          </div>
+        </div>
+
+        <footer class="page-footer" *ngIf="footerFor(i) as f"
+                [style.color]="footerColor"
+                [style.padding]="'0 ' + footerPadX + 'px'"
+                [style.height.px]="bottomPx">
+          <span class="ft-l">{{ f.left }}</span>
+          <span class="ft-c">{{ f.center }}</span>
+          <span class="ft-r">{{ f.right }}</span>
+        </footer>
+      </div>
+
+    </div>
+  </div>
+</div>

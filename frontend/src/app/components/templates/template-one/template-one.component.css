@@ -1,0 +1,111 @@
+.resume.t1 {
+  display: flex;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.t1 .sidebar {
+  background: var(--t-primary, #111827);
+  color: #f3f4f6;
+  width: 280px;
+  padding: 2rem 1.5rem;
+}
+
+.t1 .sidebar h1 {
+  font-size: 1.4rem;
+  margin-bottom: 0.2rem;
+}
+
+.t1 .sidebar h4 {
+  color: #9ca3af;
+  font-weight: 400;
+  margin-top: 0;
+}
+
+.t1 .contact p {
+  font-size: 0.85rem;
+  color: #d1d5db;
+  margin: 0.2rem 0;
+}
+
+.t1 .section {
+  margin-top: 1.5rem;
+}
+
+.t1 .section h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--t-accent, #818cf8);
+  margin-bottom: 0.5rem;
+}
+
+.t1 .section a {
+  display: block;
+  color: var(--t-accent, #93c5fd);
+  font-size: 0.85rem;
+  margin-bottom: 0.2rem;
+  text-decoration: none;
+}
+
+.t1 .section ul {
+  padding-left: 1.1rem;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.t1 .main {
+  flex: 1;
+  padding: 2rem 2.2rem;
+}
+
+.t1 .main h2 {
+  color: var(--t-accent, #4f46e5);
+  border-bottom: 2px solid #eef2ff;
+  padding-bottom: 0.3rem;
+  font-size: 1.1rem;
+}
+
+.t1 .exp,
+.t1 .edu {
+  margin-bottom: 1.2rem;
+}
+
+.t1 .exp h4,
+.t1 .edu h4 {
+  margin-bottom: 0.1rem;
+}
+
+.t1 .meta {
+  font-size: 0.8rem;
+  color: #777;
+  margin: 0.1rem 0 0.4rem;
+}
+
+/* Header style options */
+.t1-name-row h1,
+.t1-name-row h4 { display: block; }
+
+.t1-name-row.same-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.t1-name-row.same-line h1 { margin-bottom: 0; }
+.t1-name-row.same-line h4 { margin: 0; }
+
+.contact-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.8rem;
+}
+
+.contact-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.1rem 0.5rem;
+}

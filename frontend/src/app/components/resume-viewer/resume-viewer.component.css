@@ -1,0 +1,9 @@
+.rv-backdrop {
+  position: fixed; inset: 0; z-index: 1000; animation: fadeIn .16s ease-out;
+  background: radial-gradient(60% 60% at 50% 0%, var(--brand-glow), transparent 70%), rgba(30, 18, 64, .66); backdrop-filter: blur(8px);
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.rv-scroll { position: absolute; inset: 0; overflow-y: auto; padding: 28px 12px 40px; }
+.rv-sheet  { width: min(900px, 100%); margin: 0 auto; cursor: default; }
+.rv-close  { --size: 38px; position: fixed; top: 14px; right: 18px; z-index: 2; border-radius: 50%; color: var(--pink); background: var(--bg-card); box-shadow: var(--shadow-md); }
+@media print { .rv-backdrop { display: none !important; } }

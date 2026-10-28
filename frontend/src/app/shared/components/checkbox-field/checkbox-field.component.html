@@ -1,0 +1,13 @@
+<!-- src/app/shared/components/checkbox-field/checkbox-field.component.html -->
+<label class="check" [class.disabled]="disabled" (click)="toggle()">
+  <span class="check-box" [class.checked]="checked" [class.disabled]="disabled">
+    <svg *ngIf="checked" viewBox="0 0 12 10" width="12" height="10">
+      <polyline points="1,5 4.5,9 11,1" stroke="white" stroke-width="2" fill="none"
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+  <span class="check-text">
+    <span>{{ label }}</span>
+    <span *ngIf="description" class="check-desc">{{ description }}</span>
+  </span>
+</label>

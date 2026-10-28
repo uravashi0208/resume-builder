@@ -1,0 +1,18 @@
+<nav class="navbar" *ngIf="!(isAuthPage$ | async) && (currentUser$ | async)">
+  <div class="navbar-inner glass glass-pill d-flex align-center justify-between gap-4">
+    <a routerLink="/dashboard" class="brand d-flex align-center gap-2">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#fff" fill-opacity=".95"/><path d="M14 3v4h4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 11h6M9 14h6M9 17h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </span>
+      <span class="brand-text">Resume<b>Builder</b></span>
+    </a>
+    <div class="tabs">
+      <a routerLink="/dashboard"    routerLinkActive="active">Dashboard</a>
+      <a routerLink="/applications" routerLinkActive="active">Applications</a>
+    </div>
+    <button class="logout-btn btn-sm d-inline-flex align-center gap-2" (click)="logout()">
+      <svg viewBox="0 0 20 20" width="15" height="15" fill="none"><path d="M8 4H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M12 7l3 3-3 3M15 10H8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Logout
+    </button>
+  </div>
+</nav>

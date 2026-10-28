@@ -1,0 +1,24 @@
+/* Wrapper, toolbar, label and messages come from the global design system.
+   Only the editor surface needs local rules. */
+.re-editor { padding: 0; border-top-left-radius: 0; border-top-right-radius: 0; line-height: 1.65; word-break: break-word; }
+.re-disabled .re-editor  { opacity: .7; background: var(--bg-subtle); cursor: not-allowed; }
+.re-disabled .toolbar    { opacity: .5; pointer-events: none; }
+
+.re-icon-b, .re-icon-i, .re-icon-u { font: 13px/1 Georgia, serif; }
+.re-icon-b { font-weight: 700; } .re-icon-i { font-style: italic; } .re-icon-u { text-decoration: underline; }
+
+/* TipTap creates the .ProseMirror element inside .re-editor */
+.re-editor ::ng-deep .ProseMirror { padding: .65rem .85rem; outline: none; min-height: inherit; }
+.re-editor ::ng-deep .ProseMirror p { margin: 0 0 .25rem; }
+.re-editor ::ng-deep .ProseMirror strong { font-weight: 700; }
+.re-editor ::ng-deep .ProseMirror em     { font-style: italic; }
+.re-editor ::ng-deep .ProseMirror u      { text-decoration: underline; }
+.re-editor ::ng-deep .ProseMirror ul { margin: .25rem 0; padding-left: 1.5rem; list-style: disc outside; }
+.re-editor ::ng-deep .ProseMirror li { margin-bottom: 2px; }
+.re-editor ::ng-deep .ProseMirror li > p { margin: 0; }
+.re-editor ::ng-deep .ProseMirror a  { color: var(--brand); text-decoration: underline; cursor: pointer; }
+
+.re-editor ::ng-deep .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder); float: left; height: 0; pointer-events: none;
+  color: var(--text-muted); font-size: var(--fs-md);
+}

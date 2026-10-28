@@ -1,0 +1,16 @@
+<div class="cv-view-container">
+  <div class="cv-toolbar card d-flex align-center justify-between no-print">
+    <h2 class="card-title">CV Preview</h2>
+    <button class="btn-primary" (click)="printCv()">⬇ Download as PDF</button>
+  </div>
+
+  <div *ngIf="loading">Loading...</div>
+
+  <div *ngIf="!loading && !profile" class="empty-state text-center text-muted no-print">
+    <p>No profile found. Please create your profile first.</p>
+  </div>
+
+  <div class="cv-sheet" *ngIf="!loading && profile">
+    <app-resume-pages [profile]="profile"></app-resume-pages>
+  </div>
+</div>

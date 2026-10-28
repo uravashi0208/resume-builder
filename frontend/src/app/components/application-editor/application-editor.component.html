@@ -1,0 +1,1057 @@
+<div class="editor-page d-flex flex-column">
+
+  <!-- Top bar: Content / Customize tabs + Save/Cancel -->
+  <div class="top-bar glass glass-pill d-flex align-center justify-between gap-4">
+    <div class="d-flex align-center gap-3">
+      <button type="button" class="btn-icon" (click)="cancel()" title="Go back">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none">
+          <path d="M12 5l-5 5 5 5" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="tabs">
+        <button [class.active]="activeTab === 'content'" (click)="setTab('content')">Content</button>
+        <button [class.active]="activeTab === 'customize'" (click)="setTab('customize')">Customize</button>
+      </div>
+    </div>
+    <div class="d-flex align-center gap-3">
+      <p class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</p>
+      <button type="button" class="btn-secondary" (click)="cancel()">Cancel</button>
+      <button type="button" class="btn-primary" (click)="save()" [disabled]="saving">
+        {{ saving ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-state d-flex align-center justify-center">Loading...</div>
+
+  <form [formGroup]="form" *ngIf="!loading" class="editor-body d-flex">
+
+    <!-- ===================== CONTENT TAB ===================== -->
+    <ng-container *ngIf="activeTab === 'content'">
+
+      <!-- Left sidebar: section list -->
+      <app-side-nav [items]="sections" [active]="activeSection" (select)="setSection($any($event))"></app-side-nav>
+
+      <!-- Middle: active section's form fields -->
+      <div class="section-form">
+
+        <!-- Company Details -->
+        <div *ngIf="activeSection === 'company'" formGroupName="company" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">Company Details</h3>
+          <app-input-field label="Company Name" placeholder="e.g. Google"
+            [required]="true" formControlName="companyName">
+          </app-input-field>
+
+          <app-input-field label="Applied Title" placeholder="e.g. Frontend Developer"
+            [required]="true" formControlName="appliedTitle">
+          </app-input-field>
+
+          <app-date-picker label="Apply Date" [required]="true"
+            formControlName="applyDate">
+          </app-date-picker>
+
+          <app-input-field label="Location" placeholder="e.g. Bangalore, India"
+            formControlName="location">
+          </app-input-field>
+
+          <app-select-field label="Status"
+            [options]="[{value:'Applied',label:'Applied'},{value:'Accepted',label:'Accepted'},{value:'Rejected',label:'Rejected'}]"
+            formControlName="status">
+          </app-select-field>
+        </div>
+
+        <!-- Basic Info -->
+        <div *ngIf="activeSection === 'basic'" formGroupName="profile" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">Basic Info</h3>
+          <!-- "About Me" heading is editable -->
+          <div class="heading-edit-row d-flex align-center" *ngIf="getSectionLabelKey() as lk">
+            <span class="heading-section-icon d-flex align-center justify-center"><app-section-icon [name]="getCurrentIcon(lk)" [size]="16"></app-section-icon></span>
+            <strong class="heading-preview-text">{{ getCurrentHeadingValue(lk) }}</strong>
+            <button type="button" class="btn-ghost btn-sm" (click)="openEditHeading(lk)">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Edit Heading
+            </button>
+          </div>
+          <div class="photo-field d-flex align-center gap-4">
+            <div class="photo-preview d-flex align-center justify-center">
+              <img *ngIf="form.get('profile.photo')?.value as ph; else noPhoto" [src]="ph" alt="Photo" />
+              <ng-template #noPhoto><span>No photo</span></ng-template>
+            </div>
+            <div class="photo-actions d-flex flex-wrap align-center gap-2">
+              <label class="btn-ghost photo-upload">
+                Upload photo
+                <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
+              </label>
+              <button type="button" class="btn-ghost" *ngIf="form.get('profile.photo')?.value" (click)="removePhoto()">Remove</button>
+              <small>Used by Professional, Botanical and Clean templates.</small>
+            </div>
+          </div>
+          <app-input-field label="Full Name" placeholder="Parth Modi"
+            [required]="true" formControlName="fullName">
+          </app-input-field>
+
+          <app-input-field label="Professional Title" placeholder="Frontend Developer"
+            [required]="true" formControlName="professionalTitle">
+          </app-input-field>
+
+          <app-input-field label="Email" type="email" placeholder="you@example.com"
+            [required]="true" formControlName="email">
+          </app-input-field>
+
+          <app-input-field label="Phone" placeholder="+91-9033511367"
+            [required]="true" formControlName="phone">
+          </app-input-field>
+
+          <app-input-field label="Location" placeholder="Gandhinagar, Gujarat, India"
+            formControlName="location">
+          </app-input-field>
+
+          <app-rich-editor
+            label="About Me"
+            placeholder="Short bio about yourself..."
+            [showAlign]="true"
+            formControlName="aboutMe">
+          </app-rich-editor>
+        </div>
+
+        <!-- Education -->
+        <div *ngIf="activeSection === 'education'" formGroupName="profile" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">Education</h3>
+          <div class="heading-edit-row d-flex align-center" *ngIf="getSectionLabelKey() as lk">
+            <span class="heading-section-icon d-flex align-center justify-center"><app-section-icon [name]="getCurrentIcon(lk)" [size]="16"></app-section-icon></span>
+            <strong class="heading-preview-text">{{ getCurrentHeadingValue(lk) }}</strong>
+            <button type="button" class="btn-ghost btn-sm" (click)="openEditHeading(lk)">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Edit Heading
+            </button>
+          </div>
+          <div formArrayName="education">
+            <div class="block-card" *ngFor="let edu of education.controls; let i = index" [formGroupName]="i">
+
+              <div class="d-flex flex-column">
+                <app-input-field label="Degree" formControlName="degree" placeholder="Master of Science in Information and Technology"></app-input-field>
+              </div>
+
+              <div class="d-flex flex-column">
+                <app-input-field label="School" formControlName="institute" placeholder="e.g. Gujarat Technological University"></app-input-field>
+              </div>
+
+              <!-- Start / End Date / Location -->
+              <div class="d-grid grid-3 gap-3 align-end">
+                <app-date-picker label="Start Date" mode="year" formControlName="startDate"></app-date-picker>
+                <app-date-picker label="End Date" mode="year" [allowPresent]="true" formControlName="endDate"></app-date-picker>
+                <div class="d-flex flex-column">
+                  <app-input-field label="Location" formControlName="location" placeholder="India"></app-input-field>
+                </div>
+              </div>
+
+              <div class="d-flex flex-column">
+                <app-input-field label="Score / GPA" formControlName="score" placeholder="e.g. 8.5 CGPA"></app-input-field>
+              </div>
+
+              <div class="d-flex flex-column">
+                <app-rich-editor
+                  label="Description"
+                  placeholder="Relevant coursework, achievements, honors..."
+                  minHeight="80px"
+                  formControlName="description">
+                </app-rich-editor>
+              </div>
+
+              <button type="button" class="btn-icon danger sm block-remove-corner"
+                (click)="removeEducation(i)" *ngIf="education.length > 1" title="Remove" aria-label="Remove">
+                <svg viewBox="0 0 14 14" width="12" height="12" fill="none">
+                  <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <button type="button" class="btn-add" (click)="addEducation()">+ Add Education</button>
+        </div>
+
+        <!-- Core Competencies -->
+        <div *ngIf="activeSection === 'competencies'" formGroupName="profile" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">Core Competencies</h3>
+          <div class="heading-edit-row d-flex align-center" *ngIf="getSectionLabelKey() as lk">
+            <span class="heading-section-icon d-flex align-center justify-center"><app-section-icon [name]="getCurrentIcon(lk)" [size]="16"></app-section-icon></span>
+            <strong class="heading-preview-text">{{ getCurrentHeadingValue(lk) }}</strong>
+            <button type="button" class="btn-ghost btn-sm" (click)="openEditHeading(lk)">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Edit Heading
+            </button>
+          </div>
+          <div formArrayName="coreCompetencies">
+            <div class="dynamic-row" *ngFor="let c of coreCompetencies.controls; let i = index">
+              <app-input-field [formControlName]="i" placeholder="e.g. Team Leadership" style="flex:1"></app-input-field>
+              <button type="button" class="btn-danger" (click)="removeCompetency(i)" *ngIf="coreCompetencies.length > 1">✕</button>
+            </div>
+          </div>
+          <button type="button" class="btn-add" (click)="addCompetency()">+ Add Competency</button>
+        </div>
+
+        <!-- Technical Skills -->
+        <div *ngIf="activeSection === 'skills'" formGroupName="profile" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">Technical Skills</h3>
+          <div class="heading-edit-row d-flex align-center" *ngIf="getSectionLabelKey() as lk">
+            <span class="heading-section-icon d-flex align-center justify-center"><app-section-icon [name]="getCurrentIcon(lk)" [size]="16"></app-section-icon></span>
+            <strong class="heading-preview-text">{{ getCurrentHeadingValue(lk) }}</strong>
+            <button type="button" class="btn-ghost btn-sm" (click)="openEditHeading(lk)">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Edit Heading
+            </button>
+          </div>
+          <div formArrayName="technicalSkills" class="d-flex flex-column gap-3">
+            <div class="block-card" *ngFor="let s of technicalSkills.controls; let i = index" [formGroupName]="i">
+              <!-- Header: category input + remove button -->
+              <div class="block-card-header">
+                <app-input-field
+                  label="Category"
+                  formControlName="category"
+                  placeholder="e.g. Frontend">
+                </app-input-field>
+                <button type="button" class="btn-icon danger sm block-remove-corner"
+                  (click)="removeSkillGroup(i)"
+                  *ngIf="technicalSkills.length > 1"
+                  title="Remove skill group">
+                  <svg viewBox="0 0 14 14" width="12" height="12" fill="none">
+                    <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+              <!-- Skills editor below -->
+              <app-textarea-field
+                label="Skills"
+                placeholder="React.js, TypeScript, Angular, Next.js..."
+                hint="Separate skills with commas"
+                [rows]="3"
+                formControlName="items">
+              </app-textarea-field>
+            </div>
+          </div>
+          <button type="button" class="btn-add" (click)="addSkillGroup()">+ Add Skill Group</button>
+        </div>
+
+        <!-- Interests -->
+        <div *ngIf="activeSection === 'interests'" formGroupName="profile" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">Interests</h3>
+          <div class="heading-edit-row d-flex align-center" *ngIf="getSectionLabelKey() as lk">
+            <span class="heading-section-icon d-flex align-center justify-center"><app-section-icon [name]="getCurrentIcon(lk)" [size]="16"></app-section-icon></span>
+            <strong class="heading-preview-text">{{ getCurrentHeadingValue(lk) }}</strong>
+            <button type="button" class="btn-ghost btn-sm" (click)="openEditHeading(lk)">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Edit Heading
+            </button>
+          </div>
+          <div formArrayName="interests">
+            <div class="dynamic-row" *ngFor="let it of interests.controls; let i = index">
+              <app-input-field [formControlName]="i" placeholder="e.g. Photography" style="flex:1"></app-input-field>
+              <button type="button" class="btn-danger" (click)="removeInterest(i)" *ngIf="interests.length > 1">✕</button>
+            </div>
+          </div>
+          <button type="button" class="btn-add" (click)="addInterest()">+ Add Interest</button>
+        </div>
+
+        <!-- Certificates -->
+        <div *ngIf="activeSection === 'certificates'" formGroupName="profile" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">Certificates</h3>
+          <div class="heading-edit-row d-flex align-center" *ngIf="getSectionLabelKey() as lk">
+            <span class="heading-section-icon d-flex align-center justify-center"><app-section-icon [name]="getCurrentIcon(lk)" [size]="16"></app-section-icon></span>
+            <strong class="heading-preview-text">{{ getCurrentHeadingValue(lk) }}</strong>
+            <button type="button" class="btn-ghost btn-sm" (click)="openEditHeading(lk)">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Edit Heading
+            </button>
+          </div>
+          <div formArrayName="certificates">
+            <div class="dynamic-row" *ngFor="let c of certificates.controls; let i = index">
+              <app-input-field [formControlName]="i" placeholder="e.g. Project Management Professional (PMP)" style="flex:1"></app-input-field>
+              <button type="button" class="btn-danger" (click)="removeCertificate(i)" *ngIf="certificates.length > 1">✕</button>
+            </div>
+          </div>
+          <button type="button" class="btn-add" (click)="addCertificate()">+ Add Certificate</button>
+        </div>
+
+        <!-- Languages -->
+        <div *ngIf="activeSection === 'languages'" formGroupName="profile" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">Languages</h3>
+          <div class="heading-edit-row d-flex align-center" *ngIf="getSectionLabelKey() as lk">
+            <span class="heading-section-icon d-flex align-center justify-center"><app-section-icon [name]="getCurrentIcon(lk)" [size]="16"></app-section-icon></span>
+            <strong class="heading-preview-text">{{ getCurrentHeadingValue(lk) }}</strong>
+            <button type="button" class="btn-ghost btn-sm" (click)="openEditHeading(lk)">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Edit Heading
+            </button>
+          </div>
+          <div formArrayName="languages">
+            <div class="dynamic-row" *ngFor="let l of languages.controls; let i = index" [formGroupName]="i">
+              <app-input-field formControlName="name" placeholder="e.g. English" style="flex:1"></app-input-field>
+              <app-select-field [options]="levelOptions" formControlName="level" style="width:150px"></app-select-field>
+              <button type="button" class="btn-danger" (click)="removeLanguage(i)" *ngIf="languages.length > 1">✕</button>
+            </div>
+          </div>
+          <button type="button" class="btn-add" (click)="addLanguage()">+ Add Language</button>
+        </div>
+
+        <!-- Experience -->
+        <div *ngIf="activeSection === 'experience'" formGroupName="profile" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">Experience</h3>
+          <div class="heading-edit-row d-flex align-center" *ngIf="getSectionLabelKey() as lk">
+            <span class="heading-section-icon d-flex align-center justify-center"><app-section-icon [name]="getCurrentIcon(lk)" [size]="16"></app-section-icon></span>
+            <strong class="heading-preview-text">{{ getCurrentHeadingValue(lk) }}</strong>
+            <button type="button" class="btn-ghost btn-sm" (click)="openEditHeading(lk)">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Edit Heading
+            </button>
+          </div>
+          <div formArrayName="experience">
+            <div class="block-card" *ngFor="let exp of experience.controls; let i = index" [formGroupName]="i">
+              <div class="d-grid grid-2 gap-3">
+                <app-input-field label="Role" formControlName="role" placeholder="Role" style="flex:1"></app-input-field>
+                <app-input-field label="Company" formControlName="company" placeholder="Company" style="flex:1"></app-input-field>
+              </div>
+              <app-input-field label="Location" formControlName="location" placeholder="Location"></app-input-field>
+
+              <div class="d-flex align-center flex-wrap gap-3">
+                <app-date-picker label="Start Date" mode="month-year" formControlName="startDate" style="flex:1"></app-date-picker>
+                <app-date-picker label="End Date" mode="month-year" [allowPresent]="true" formControlName="endDate" style="flex:1"></app-date-picker>
+              </div>
+
+              <app-rich-editor
+                placeholder="Description of your role and achievements..."
+                minHeight="90px"
+                formControlName="description">
+              </app-rich-editor>
+              <button type="button" class="btn-icon danger sm block-remove-corner"
+                (click)="removeExperience(i)" *ngIf="experience.length > 1" title="Remove" aria-label="Remove">
+                <svg viewBox="0 0 14 14" width="12" height="12" fill="none">
+                  <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <button type="button" class="btn-add" (click)="addExperience()">+ Add Experience</button>
+        </div>
+
+        <!-- Social Links -->
+        <div *ngIf="activeSection === 'social'" formGroupName="profile" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">Social Links</h3>
+          <div class="heading-edit-row d-flex align-center" *ngIf="getSectionLabelKey() as lk">
+            <span class="heading-section-icon d-flex align-center justify-center"><app-section-icon [name]="getCurrentIcon(lk)" [size]="16"></app-section-icon></span>
+            <strong class="heading-preview-text">{{ getCurrentHeadingValue(lk) }}</strong>
+            <button type="button" class="btn-ghost btn-sm" (click)="openEditHeading(lk)">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              Edit Heading
+            </button>
+          </div>
+          <div formGroupName="socialLinks" class="d-flex flex-column gap-4">
+              <app-input-field label="LinkedIn" formControlName="linkedin" placeholder="LinkedIn URL" type="url"></app-input-field>
+              <app-input-field label="GitHub" formControlName="github" placeholder="GitHub URL" type="url"></app-input-field>
+              <app-input-field label="Portfolio" formControlName="portfolio" placeholder="Portfolio URL" type="url"></app-input-field>
+              <app-input-field label="Twitter" formControlName="twitter" placeholder="Twitter/X URL" type="url"></app-input-field>
+          </div>
+        </div>
+
+        <!-- GDPR Consent -->
+        <div *ngIf="activeSection === 'gdpr'" formGroupName="profile" class="panel d-flex flex-column gap-4">
+          <h3 class="panel-title">GDPR Consent</h3>
+          <app-rich-editor
+                label="Consent text"
+                placeholder="Shown at the bottom of your CV. Same text is used for all CVs — edit it here if you need to. Leave empty to hide it."
+                minHeight="200px"
+                formControlName="gdprConsent">
+              </app-rich-editor>
+          <!-- <app-textarea-field
+            label="Consent text"
+            hint="Shown at the bottom of your CV. Same text is used for all CVs — edit it here if you need to. Leave empty to hide it."
+            [rows]="5"
+            formControlName="gdprConsent"> -->
+          <!-- </app-textarea-field> -->
+          <div>
+            <button type="button" class="btn-ghost" (click)="resetGdprConsent()">Reset to default</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: live preview -->
+      <div class="preview-panel d-flex flex-column align-center">
+        <div class="preview-scale zoomable" (click)="viewerOpen = true" title="Click to enlarge">
+          <app-resume-pages [profile]="previewProfile"></app-resume-pages>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ===================== CUSTOMIZE TAB ===================== -->
+    <ng-container *ngIf="activeTab === 'customize'">
+      <app-side-nav [items]="customizeSections" [active]="activeCustomize" (select)="setCustomize($event)"></app-side-nav>
+      <div class="section-form" formGroupName="profile">
+       <div class="panel d-flex flex-column gap-4">
+        <!-- ===== DOCUMENT SETTINGS ===== -->
+        <section class="cz-card d-flex flex-column cz-doc glass" *ngIf="activeCustomize === 'document'" formGroupName="documentSettings">
+          <h3 class="panel-title">Document Settings</h3>
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Language</p>
+            <app-dropdown formControlName="language" [options]="languageOptions" ariaLabel="Language"></app-dropdown>
+          </div>
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Date Format</p>
+            <app-dropdown formControlName="dateFormat" [options]="dateFormatOptions" ariaLabel="Date format"></app-dropdown>
+          </div>
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Page Format</p>
+            <app-dropdown formControlName="pageFormat" [options]="pageFormatOptions" ariaLabel="Page format"></app-dropdown>
+          </div>
+        </section>
+
+        <div *ngIf="activeCustomize === 'template'" class="d-flex flex-column gap-3">
+        <h3 class="panel-title">Template</h3>
+        <div class="template-gallery d-flex flex-wrap gap-2">
+          <label class="template-gallery-card" *ngFor="let t of templateOptions">
+            <input type="radio" formControlName="template" [value]="t.id" (change)="onTemplatePick(t.id)" />
+            <div class="thumb-frame">
+              <div class="thumb-scale">
+                <app-resume [profile]="t.sample"></app-resume>
+              </div>
+            </div>
+            <span class="gallery-label">{{ t.label }}</span>
+          </label>
+        </div>
+        </div>
+
+        <!-- ===== LAYOUT (Change Section Layout) ===== -->
+        <section class="cz-card d-flex flex-column glass" *ngIf="activeCustomize === 'layout'">
+          <h3 class="panel-title">Layout</h3>
+          <div class="d-flex flex-column gap-2">
+            <div class="d-flex align-center justify-between">
+              <strong>Change Section Layout</strong>
+              <button type="button" class="btn-ghost btn-sm" *ngIf="!isDefaultOrder" (click)="resetSectionOrder()">Reset order</button>
+            </div>
+            <small class="text-muted">Drag a section (or use the arrows) to move it. Put <b>Page break</b> between two sections to start a new page there.</small>
+            <app-sortable-list [items]="layoutItems" [order]="sectionOrder" (orderChange)="setSectionOrder($event)"></app-sortable-list>
+          </div>
+        </section>
+
+        <!-- ===== FONT SIZE ===== -->
+        <section class="cz-card d-flex flex-column glass" *ngIf="activeCustomize === 'fontsize'">
+          <h3 class="panel-title">Font Size</h3>
+          <div formGroupName="fontSize" class="d-flex flex-column gap-4">
+            <app-step-slider label="Base Font Size" formControlName="base" [min]="8" [max]="14" [step]="0.5" unit="pt"></app-step-slider>
+            <app-step-slider label="Full Name" formControlName="fullName" [min]="0" [max]="16" [step]="1" prefix="+" unit="pt"></app-step-slider>
+            <app-step-slider label="Professional Title" formControlName="title" [min]="0" [max]="8" [step]="0.5" prefix="+" unit="pt"></app-step-slider>
+            <app-step-slider label="Section Headings" formControlName="sectionHeadings" [min]="0" [max]="6" [step]="0.5" prefix="+" unit="pt"></app-step-slider>
+            <app-step-slider label="Entry Header" formControlName="entryHeader" [min]="0" [max]="4" [step]="0.5" prefix="+" unit="pt"></app-step-slider>
+          </div>
+        </section>
+
+        <!-- ===== SPACING ===== -->
+        <section class="cz-card d-flex flex-column glass" *ngIf="activeCustomize === 'spacing'">
+          <h3 class="panel-title">Spacing</h3>
+          <div formGroupName="spacing" class="d-flex flex-column gap-4">
+            <app-step-slider label="Line Height" formControlName="lineHeight" [min]="1" [max]="2" [step]="0.05"></app-step-slider>
+            <app-step-slider label="Space Between Elements" formControlName="elementSpacing" [min]="0" [max]="4" [step]="1" display="bracket"></app-step-slider>
+            <app-step-slider label="Left &amp; Right Margin" formControlName="sideMargin" [min]="8" [max]="30" [step]="1" unit="mm"></app-step-slider>
+            <app-step-slider label="Top &amp; Bottom Margin" formControlName="topBottomMargin" [min]="6" [max]="26" [step]="1" unit="mm"></app-step-slider>
+          </div>
+        </section>
+
+        <!-- ===== ENTRY LAYOUT ===== -->
+        <section class="cz-card d-flex flex-column glass" *ngIf="activeCustomize === 'entries'" formGroupName="entryLayout">
+          <h3 class="panel-title">Entry Layout</h3>
+
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Structure</p>
+            <div class="cz-grid d-grid grid-2">
+              <button type="button" class="opt opt-tile" [class.active]="is('entryLayout.structure','full-width')" (click)="pick('entryLayout.structure','full-width')">
+                <svg viewBox="0 0 30 18" width="34" height="20"><path d="M3 4h24M3 9h24M3 14h24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>Full Width</span>
+              </button>
+              <button type="button" class="opt opt-tile" [class.active]="is('entryLayout.structure','columns')" (click)="pick('entryLayout.structure','columns')">
+                <svg viewBox="0 0 30 18" width="34" height="20"><path d="M3 4h7M3 9h7M13 4h14M13 9h14M13 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>Columns</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Date &amp; Location Position</p>
+            <div class="cz-grid d-grid grid-3">
+              <button type="button" class="opt" [class.active]="is('entryLayout.dateLocationPosition','right')" (click)="pick('entryLayout.dateLocationPosition','right')">Right</button>
+              <button type="button" class="opt" [class.active]="is('entryLayout.dateLocationPosition','left')" (click)="pick('entryLayout.dateLocationPosition','left')">Left</button>
+              <button type="button" class="opt" [class.active]="is('entryLayout.dateLocationPosition','split')" (click)="pick('entryLayout.dateLocationPosition','split')">Split</button>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Subtitle Placement</p>
+            <div class="cz-grid d-grid grid-2">
+              <button type="button" class="opt" [class.active]="is('entryLayout.subtitlePlacement','same-line')" (click)="pick('entryLayout.subtitlePlacement','same-line')">Try Same Line</button>
+              <button type="button" class="opt" [class.active]="is('entryLayout.subtitlePlacement','below')" (click)="pick('entryLayout.subtitlePlacement','below')">Below Title</button>
+            </div>
+          </div>
+
+          <!-- ---- Advanced settings ---- -->
+          <div class="cz-adv">
+            <button type="button" class="cz-adv-toggle d-flex align-center justify-between" (click)="entryAdvOpen = !entryAdvOpen">
+              Advanced settings
+              <svg [style.transform]="entryAdvOpen ? 'rotate(180deg)' : ''" viewBox="0 0 16 16" width="14" height="14"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+            </button>
+
+            <div class="cz-adv-body d-flex flex-column gap-4" *ngIf="entryAdvOpen">
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Column Width</p>
+                <div class="cz-grid d-grid grid-2">
+                  <button type="button" class="opt" [class.active]="is('entryLayout.columnWidthMode','auto')" (click)="pick('entryLayout.columnWidthMode','auto')">Auto</button>
+                  <button type="button" class="opt" [class.active]="is('entryLayout.columnWidthMode','manual')" (click)="pick('entryLayout.columnWidthMode','manual')">Manual</button>
+                </div>
+                <!-- two boxes whose widths follow the percentages; "+" grows that column (the other one shrinks) -->
+                <div class="cz-width d-flex" *ngIf="is('entryLayout.columnWidthMode','manual')">
+                  <div class="cz-width-col" [style.flex]="entryLeftWidth + ' 1 0'">
+                    <span class="cz-width-label">Left <small>{{ entryLeftWidth }}%</small></span>
+                    <button type="button" class="cz-width-btn" aria-label="Increase left column"
+                            [disabled]="entryLeftWidth >= entryColMax" (click)="nudgeEntryWidth(entryWidthStep)">+</button>
+                  </div>
+                  <div class="cz-width-col" [style.flex]="(100 - entryLeftWidth) + ' 1 0'">
+                    <span class="cz-width-label">Right <small>{{ 100 - entryLeftWidth }}%</small></span>
+                    <button type="button" class="cz-width-btn" aria-label="Increase right column"
+                            [disabled]="entryLeftWidth <= entryColMin" (click)="nudgeEntryWidth(-entryWidthStep)">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Subtitle</p>
+            <div class="cz-grid cols-aa">
+              <button *ngFor="let t of entryTextStyles" type="button" class="opt opt-sq" [ngClass]="t.cls"
+                [class.active]="is('entryLayout.subtitleStyle', t.id)" (click)="pick('entryLayout.subtitleStyle', t.id)">Aa</button>
+            </div>
+              </div>
+
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Date</p>
+            <div class="cz-grid cols-aa">
+              <button *ngFor="let t of entryTextStyles" type="button" class="opt opt-sq" [ngClass]="t.cls"
+                [class.active]="is('entryLayout.dateStyle', t.id)" (click)="pick('entryLayout.dateStyle', t.id)">Aa</button>
+            </div>
+              </div>
+
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Location</p>
+            <div class="cz-grid cols-aa">
+              <button *ngFor="let t of entryTextStyles" type="button" class="opt opt-sq" [ngClass]="t.cls"
+                [class.active]="is('entryLayout.locationStyle', t.id)" (click)="pick('entryLayout.locationStyle', t.id)">Aa</button>
+            </div>
+              </div>
+
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Description Indentation</p>
+                <label class="check align-center">
+                  <input type="checkbox" formControlName="indentBody" />
+                  <span class="check-box"></span>
+                  <span>Indent body</span>
+                </label>
+              </div>
+
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">List Style</p>
+                <div class="cz-grid d-grid grid-2">
+                  <button type="button" class="opt" [class.active]="is('entryLayout.listStyle','bullet')" (click)="pick('entryLayout.listStyle','bullet')"><span class="cz-dot d-flex align-center justify-center">&bull;</span> Bullet</button>
+                  <button type="button" class="opt" [class.active]="is('entryLayout.listStyle','hyphen')" (click)="pick('entryLayout.listStyle','hyphen')"><span class="cz-dot d-flex align-center justify-center">&ndash;</span> Hyphen</button>
+                </div>
+              </div>
+
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Date &amp; Location Order</p>
+                <div class="cz-grid d-grid grid-2">
+                  <button type="button" class="opt" [class.active]="is('entryLayout.dateLocationOrder','date-location')" (click)="pick('entryLayout.dateLocationOrder','date-location')">Date - Location</button>
+                  <button type="button" class="opt" [class.active]="is('entryLayout.dateLocationOrder','location-date')" (click)="pick('entryLayout.dateLocationOrder','location-date')">Location - Date</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== SECTION HEADINGS ===== -->
+        <section class="cz-card d-flex flex-column glass" *ngIf="activeCustomize === 'headings'" formGroupName="headingStyle">
+          <h3 class="panel-title">Section Headings</h3>
+
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Style</p>
+            <div class="cz-grid d-grid grid-4">
+              <button type="button" class="opt opt-tile hs-tile" *ngFor="let s of headingStyles"
+                [class.active]="is('headingStyle.style', s)" (click)="pick('headingStyle.style', s)" [attr.aria-label]="'Heading style ' + (s + 1)">
+                <span class="hsp" [attr.data-s]="s"><i class="hsp-t"></i><i class="hsp-l"></i></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Capitalization</p>
+            <div class="cz-grid d-grid grid-2">
+              <button type="button" class="opt" [class.active]="is('headingStyle.capitalization','capitalize')" (click)="pick('headingStyle.capitalization','capitalize')">Capitalize</button>
+              <button type="button" class="opt" [class.active]="is('headingStyle.capitalization','uppercase')" (click)="pick('headingStyle.capitalization','uppercase')">Uppercase</button>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Icons</p>
+            <div class="cz-grid d-grid grid-3">
+              <button type="button" class="opt" [class.active]="is('headingStyle.icons','none')" (click)="pick('headingStyle.icons','none')">None</button>
+              <button type="button" class="opt" [class.active]="is('headingStyle.icons','outline')" (click)="pick('headingStyle.icons','outline')">Outline</button>
+              <button type="button" class="opt" [class.active]="is('headingStyle.icons','filled')" (click)="pick('headingStyle.icons','filled')">Filled</button>
+            </div>
+              <p class="field-hint">Icons appear only on headings where an icon is turned on: Content → pick a section → Edit Heading → Show/hide icon.</p>
+          </div>
+        </section>
+
+        <!-- ===== FONT ===== -->
+        <section class="cz-card d-flex flex-column glass" *ngIf="activeCustomize === 'font'">
+          <h3 class="panel-title">Font</h3>
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Body Font</p>
+            <app-select-field [options]="fontOptions" [fontPreview]="true" formControlName="font"></app-select-field>
+          </div>
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Name Font</p>
+            <app-select-field [options]="nameFontOptions" [fontPreview]="true" formControlName="nameFont"></app-select-field>
+          </div>
+        </section>
+
+        <!-- ===== COLORS ===== -->
+        <section class="cz-card d-flex flex-column glass" *ngIf="activeCustomize === 'colors'">
+          <h3 class="panel-title">Colors</h3>
+
+          <!-- 1. what to paint -->
+          <div class="d-flex gap-3">
+            <button type="button" class="cz-target d-flex flex-column align-center" *ngFor="let t of colorTargets" [class.active]="colorTarget === t.id" (click)="setTarget(t.id)">
+              <span class="cz-target-art" [attr.data-target]="t.id"><i></i></span>
+              <span class="label-xs cz-target-label">{{ t.label }}</span>
+            </button>
+          </div>
+
+          <!-- 2. single / multi / image -->
+          <div class="d-flex gap-3">
+            <div class="d-flex flex-column align-center gap-1" *ngFor="let m of modeOptions">
+              <button type="button" class="cz-mode" [ngClass]="m.id" [class.active]="currentMode === m.id" (click)="setMode(m.id)" [attr.aria-label]="m.label"
+                [style.background]="m.id === 'single' ? (activeColor && activeColor !== 'transparent' ? activeColor : '#12394d') : null"
+                [style.background-image]="m.id === 'image' && currentImage ? 'url(&quot;' + currentImage + '&quot;)' : null">
+                <svg *ngIf="m.id === 'single' && currentMode === 'single'" viewBox="0 0 16 16" width="18" height="18"><path d="M3 8.5l3.2 3.2L13 4.8" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <ng-container *ngIf="m.id === 'multi'"><span class="m-a"><b>T</b></span><span class="m-b"></span>
+                  <svg *ngIf="currentMode === 'multi'" class="m-tick" viewBox="0 0 16 16" width="16" height="16"><path d="M3 8.5l3.2 3.2L13 4.8" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </ng-container>
+              </button>
+              <span class="label-xs">{{ m.label }}</span>
+            </div>
+          </div>
+
+          <!-- 3a. SINGLE: palette -->
+          <div class="cz-palette d-grid" *ngIf="currentMode === 'single'">
+            <button type="button" class="cz-dot d-flex align-center justify-center none" [class.active]="activeColor === 'transparent'" (click)="applyPaletteColor('transparent')" aria-label="No color">
+              <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="9" fill="none" stroke="#6b7280" stroke-width="1.6"/><path d="M6 18L18 6" stroke="#6b7280" stroke-width="1.6"/></svg>
+            </button>
+            <button type="button" class="cz-dot d-flex align-center justify-center" *ngFor="let c of paletteColors" [style.background]="c" [class.active]="activeColor === c" (click)="applyPaletteColor(c)" [attr.aria-label]="c">
+              <svg *ngIf="activeColor === c" viewBox="0 0 16 16" width="14" height="14"><path d="M3 8.5l3.2 3.2L13 4.8" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <label class="cz-dot d-flex align-center justify-center rainbow" title="Custom color">
+              <input type="color" [value]="customPickerValue" (input)="applyPaletteColor($any($event.target).value)" />
+            </label>
+          </div>
+
+          <!-- 3b. MULTI: text + background combos -->
+          <ng-container *ngIf="currentMode === 'multi'">
+            <div class="d-flex flex-wrap gap-3">
+              <button type="button" class="cz-combo" *ngFor="let p of multiPresets" [class.active]="isMultiActive(p)" (click)="applyMulti(p)">
+                <span class="c-t" [style.color]="p.text" [style.background]="tileBg(p.text)">T</span>
+                <span class="c-b" [style.background]="p.bg"></span>
+              </button>
+            </div>
+            <button type="button" class="opt opt-sm cz-custom-btn" [class.open]="customOpen" (click)="customOpen = !customOpen">Custom</button>
+            <div class="cz-color-inputs big" *ngIf="customOpen">
+              <label><span>Text</span><input type="color" [formControlName]="textField"/></label>
+              <label><span>Background</span><input type="color" [formControlName]="targetField"/></label>
+              <label><span>Accent</span><input type="color" formControlName="accentColor"/></label>
+            </div>
+          </ng-container>
+
+          <!-- 3c. IMAGE -->
+          <div class="cz-images" *ngIf="currentMode === 'image'">
+            <p class="field-label">Images</p>
+            <div class="cz-img-grid d-grid gap-2">
+              <button type="button" class="cz-img" *ngFor="let im of imageChoices" [class.active]="currentImage === im.url"
+                [style.background-image]="'url(&quot;' + im.url + '&quot;)'" [attr.title]="im.label" (click)="pickImage(im.url)"></button>
+            </div>
+            <div class="d-flex gap-2">
+              <label class="cz-upload">Upload image<input type="file" accept="image/*" (change)="onImageUpload($event)" /></label>
+              <button type="button" class="cz-upload ghost" *ngIf="currentImage" (click)="clearImage()">Remove</button>
+            </div>
+          </div>
+
+          <!-- Border only: size + sides -->
+          <ng-container *ngIf="colorTarget === 'border'">
+            <div class="d-flex flex-column gap-2">
+              <p class="field-label">Size</p>
+              <div class="d-flex gap-2">
+                <button type="button" *ngFor="let z of borderSizes" [class.active]="is('borderSize', z)" (click)="pick('borderSize', z)">{{ z }}</button>
+              </div>
+            </div>
+            <div class="d-flex flex-column gap-2">
+              <p class="field-label">Show Border</p>
+              <div class="cz-sides d-grid" formGroupName="borderSides">
+                <label class="check align-center" *ngFor="let sd of borderSideList"><input type="checkbox" [formControlName]="sd.id" /><span class="check-box"></span>{{ sd.label }}</label>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- quick exact colours -->
+          <div class="cz-color-inputs" *ngIf="currentMode === 'single'">
+            <label><span>Header Color</span><input type="color" formControlName="primaryColor" (input)="markHeaderSet()" /></label>
+            <label><span>Accent</span><input type="color" formControlName="accentColor" /></label>
+            <label><span>Page</span><input type="color" formControlName="bgColor" /></label>
+            <label><span>Border</span><input type="color" formControlName="borderColor" /></label>
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Apply Accent Color</p>
+            <div class="d-grid gap-3 cz-checks" formGroupName="accentApply">
+              <div class="d-flex flex-column gap-3">
+                <label class="check align-center"><input type="checkbox" formControlName="name" /><span class="check-box"></span>Name</label>
+                <label class="check align-center"><input type="checkbox" formControlName="jobTitle" /><span class="check-box"></span>Job title</label>
+                <label class="check align-center"><input type="checkbox" formControlName="headings" /><span class="check-box"></span>Headings</label>
+                <label class="check align-center"><input type="checkbox" formControlName="headingsLine" /><span class="check-box"></span>Headings line</label>
+                <label class="check align-center"><input type="checkbox" formControlName="headerIcons" /><span class="check-box"></span>Header icons</label>
+              </div>
+              <div class="d-flex flex-column gap-3">
+                <label class="check align-center"><input type="checkbox" formControlName="dots" /><span class="check-box"></span>Dots/bars/bubbles</label>
+                <label class="check align-center"><input type="checkbox" formControlName="dates" /><span class="check-box"></span>Dates</label>
+                <label class="check align-center"><input type="checkbox" formControlName="entryTitle" /><span class="check-box"></span>Entry title</label>
+                <label class="check align-center"><input type="checkbox" formControlName="entrySubtitle" /><span class="check-box"></span>Entry subtitle</label>
+                <label class="check align-center"><input type="checkbox" formControlName="linkIcons" /><span class="check-box"></span>Link icons</label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== HEADER SECTION ===== -->
+        <section class="cz-card d-flex flex-column cz-header glass" *ngIf="activeCustomize === 'header'">
+          <h3 class="panel-title">Header</h3>
+
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Text Alignment</p>
+            <div class="cz-tile-row">
+              <div class="d-flex flex-column align-center gap-1">
+                <button type="button" class="opt opt-tile" [class.active]="is('headerAlign','left')" (click)="pick('headerAlign','left')" aria-label="Left">
+                  <svg viewBox="0 0 28 14" width="30" height="15"><line x1="3" y1="3" x2="17" y2="3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="3" y1="10" x2="12" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+                </button><span class="label-xs">Left</span>
+              </div>
+              <div class="d-flex flex-column align-center gap-1">
+                <button type="button" class="opt opt-tile" [class.active]="is('headerAlign','center')" (click)="pick('headerAlign','center')" aria-label="Center">
+                  <svg viewBox="0 0 28 14" width="30" height="15"><line x1="7" y1="3" x2="21" y2="3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="10" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+                </button><span class="label-xs">Center</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Details Arrangement</p>
+            <div class="cz-tile-row three">
+              <button type="button" class="opt opt-tile" [class.active]="is('detailsArrangement','stacked')" (click)="setArrangement('stacked')" aria-label="One per line">
+                <svg viewBox="0 0 28 18" width="26" height="17"><line x1="5" y1="3" x2="23" y2="3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="5" y1="9" x2="23" y2="9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="5" y1="15" x2="23" y2="15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+              </button>
+              <button type="button" class="opt opt-tile" [class.active]="is('detailsArrangement','inline')" (click)="setArrangement('inline')" aria-label="In a row">
+                <svg viewBox="0 0 34 18" width="32" height="17"><line x1="1" y1="3" x2="10" y2="3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="13" y1="3" x2="22" y2="3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="25" y1="3" x2="33" y2="3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="1" y1="9" x2="10" y2="9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="13" y1="9" x2="22" y2="9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="25" y1="9" x2="33" y2="9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="1" y1="15" x2="10" y2="15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="13" y1="15" x2="22" y2="15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+              </button>
+              <button type="button" class="opt opt-tile" [class.active]="is('detailsArrangement','columns')" (click)="setArrangement('columns')" aria-label="Two columns">
+                <svg viewBox="0 0 28 18" width="26" height="17"><line x1="2" y1="3" x2="12" y2="3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="2" y1="9" x2="12" y2="9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="2" y1="15" x2="12" y2="15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="16" y1="3" x2="26" y2="3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="16" y1="9" x2="26" y2="9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="16" y1="15" x2="26" y2="15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <div class="cz-tile-row three">
+              <button type="button" class="opt" *ngFor="let o of separatorOptions" [class.active]="is('detailsSeparator', o.id)" (click)="pick('detailsSeparator', o.id)">
+                <svg *ngIf="o.id === 'icon'" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.4 2.200 2 3.500 2s2.500-.6 3.500-2"/><circle cx="9" cy="10" r=".6" fill="currentColor"/><circle cx="15" cy="10" r=".6" fill="currentColor"/></svg>
+                <b *ngIf="o.id === 'bullet'">&bull;</b><b *ngIf="o.id === 'bar'">|</b>
+                {{ o.label }}
+              </button>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            <p class="field-label">Icon Style</p>
+            <div class="d-flex flex-wrap gap-2 cz-ics">
+              <button type="button" *ngFor="let st of iconStyles; let i = index" [class.active]="iconStyleIdx === i" [attr.title]="st.label" [attr.aria-label]="st.label" (click)="pick('iconStyle', i)">
+                <span class="shp" [ngClass]="'s-' + st.key"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 10 18.7l1-1"/></svg></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="cz-adv">
+            <button type="button" class="cz-adv-toggle d-flex align-center justify-between" (click)="advOpen = !advOpen">
+              <span>Advanced Settings</span>
+              <svg [style.transform]="advOpen ? 'rotate(180deg)' : ''" viewBox="0 0 16 16" width="14" height="14"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+            </button>
+            <div class="cz-adv-body d-flex flex-column gap-4" *ngIf="advOpen">
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Name Style</p>
+                <div class="cz-grid cols-aa">
+                  <button type="button" class="opt opt-sq" [class.active]="is('nameStyle','normal')" (click)="pick('nameStyle','normal')">Aa</button>
+                  <button type="button" class="opt opt-sq b" [class.active]="is('nameStyle','bold')" (click)="pick('nameStyle','bold')">Aa</button>
+                </div>
+              </div>
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Professional Title Style</p>
+                <div class="cz-grid cols-aa">
+                  <button type="button" class="opt opt-sq" [class.active]="is('titleStyle','normal')" (click)="pick('titleStyle','normal')">Aa</button>
+                  <button type="button" class="opt opt-sq b" [class.active]="is('titleStyle','bold')" (click)="pick('titleStyle','bold')">Aa</button>
+                </div>
+              </div>
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Professional Title Position</p>
+                <div class="cz-tile-row two">
+                  <button type="button" class="opt" [class.active]="is('titlePosition','same-line')" (click)="pick('titlePosition','same-line')">Try Same Line</button>
+                  <button type="button" class="opt" [class.active]="is('titlePosition','below')" (click)="pick('titlePosition','below')">Below</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== LINKS ===== -->
+        <section class="cz-card d-flex flex-column glass" *ngIf="activeCustomize === 'links'">
+          <h3 class="panel-title">Link Styling</h3>
+          <div class="d-flex flex-column gap-3" formGroupName="linkStyling">
+            <label class="check align-center"><input type="checkbox" formControlName="underline" /><span class="check-box"></span>Underline</label>
+            <label class="check align-center"><input type="checkbox" formControlName="blueColor" /><span class="check-box"></span>Blue color</label>
+            <label class="check align-center"><input type="checkbox" formControlName="icon" /><span class="check-box"></span>Link icon</label>
+
+            <div class="cz-adv">
+              <button type="button" class="cz-adv-toggle d-flex align-center justify-between" (click)="linkAdvOpen = !linkAdvOpen"><span>Advanced Settings</span><svg [style.transform]="linkAdvOpen ? 'rotate(180deg)' : ''" viewBox="0 0 16 16" width="14" height="14"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></button>
+              <div class="cz-adv-body d-flex flex-column gap-4" *ngIf="linkAdvOpen">
+                <p class="field-label">Apply underline and blue color to header</p>
+                <label class="check align-center"><input type="checkbox" formControlName="headerEmail" /><span class="check-box"></span>Email</label>
+                <label class="check align-center"><input type="checkbox" formControlName="headerPhone" /><span class="check-box"></span>Phone</label>
+                <label class="check align-center"><input type="checkbox" formControlName="headerLinkedin" /><span class="check-box"></span>LinkedIn</label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== FOOTER ===== -->
+        <section class="cz-card d-flex flex-column glass" *ngIf="activeCustomize === 'footer'">
+          <h3 class="panel-title">Footer</h3>
+          <div class="d-flex flex-column gap-3" formGroupName="footer">
+            <label class="check align-center"><input type="checkbox" formControlName="pageNumbers" /><span class="check-box"></span>Page numbers</label>
+            <label class="check align-center"><input type="checkbox" formControlName="email" /><span class="check-box"></span>Email</label>
+            <label class="check align-center"><input type="checkbox" formControlName="name" /><span class="check-box"></span>Name</label>
+
+            <div class="cz-adv">
+              <button type="button" class="cz-adv-toggle d-flex align-center justify-between" (click)="footerAdvOpen = !footerAdvOpen"><span>Advanced Settings</span><svg [style.transform]="footerAdvOpen ? 'rotate(180deg)' : ''" viewBox="0 0 16 16" width="14" height="14"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg></button>
+              <div class="cz-adv-body d-flex flex-column gap-4" *ngIf="footerAdvOpen">
+                <label class="check align-center"><input type="checkbox" formControlName="custom" /><span class="check-box"></span>Custom footer</label>
+                <ng-container *ngIf="is('footer.custom', true)">
+                  <p class="field-label">Insert placeholders</p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="opt opt-sm" *ngFor="let ph of footerPlaceholders" (mousedown)="$event.preventDefault()" (click)="insertPlaceholder(ph.token)">{{ ph.label }} <code>({{ph.token}})</code></button>
+                  </div>
+                  <p class="field-label">Left column</p>
+                  <textarea id="ft-left" class="field-textarea" rows="2" formControlName="left" placeholder="e.g. {{name}}" (focus)="footerField = 'left'" (click)="footerField = 'left'"></textarea>
+                  <p class="field-label">Center column</p>
+                  <textarea id="ft-center" class="field-textarea" rows="2" formControlName="center" placeholder="Optional" (focus)="footerField = 'center'" (click)="footerField = 'center'"></textarea>
+                  <p class="field-label">Right column</p>
+                  <textarea id="ft-right" class="field-textarea" rows="2" formControlName="right" placeholder="e.g. {{page}} / {{pages}}" (focus)="footerField = 'right'" (click)="footerField = 'right'"></textarea>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== SECTIONS ===== -->
+        <div class="cz-sections d-flex flex-column" *ngIf="activeCustomize === 'sections'" formGroupName="sections">
+          <button type="button" class="cz-sec-head d-flex align-center justify-between" (click)="sectionsOpen = !sectionsOpen">
+            <span>Section Customizations</span>
+            <svg [style.transform]="sectionsOpen ? 'rotate(180deg)' : ''" viewBox="0 0 16 16" width="16" height="16"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+          </button>
+
+          <ng-container *ngIf="sectionsOpen">
+            <!-- Summary -->
+            <section class="cz-card d-flex flex-column glass">
+              <h3 class="panel-title">Summary</h3>
+              <div class="d-flex flex-column gap-3" formGroupName="summary">
+                <label class="check align-center"><input type="checkbox" formControlName="inHeader" /><span class="check-box"></span>Display summary as part of header</label>
+                <label class="check align-center"><input type="checkbox" formControlName="showHeading" /><span class="check-box"></span>Show summary heading</label>
+              </div>
+            </section>
+
+            <!-- Work Experience -->
+            <section class="cz-card d-flex flex-column glass">
+              <h3 class="panel-title">Work Experience</h3>
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Title/Subtitle Order</p>
+                <div class="cz-grid d-grid grid-2">
+                  <button type="button" class="opt" [class.active]="expOrder === 'jobEmployer'" (click)="pick('sections.experience.titleOrder', 'jobEmployer')">Job Title - Employer</button>
+                  <button type="button" class="opt" [class.active]="expOrder === 'employerJob'" (click)="pick('sections.experience.titleOrder', 'employerJob')">Employer - Job Title</button>
+                </div>
+              </div>
+              <div class="d-flex flex-column gap-2" formGroupName="experience">
+                <p class="field-label">Employment History</p>
+                <label class="check align-center"><input type="checkbox" formControlName="groupPromotions" /><span class="check-box"></span>Group promotions</label>
+              </div>
+            </section>
+
+            <!-- Education -->
+            <section class="cz-card d-flex flex-column glass">
+              <h3 class="panel-title">Education</h3>
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Title &amp; Subtitle Order</p>
+                <div class="cz-grid d-grid grid-2">
+                  <button type="button" class="opt" [class.active]="eduOrder === 'degreeSchool'" (click)="pick('sections.education.titleOrder', 'degreeSchool')">Degree, School</button>
+                  <button type="button" class="opt" [class.active]="eduOrder === 'schoolDegree'" (click)="pick('sections.education.titleOrder', 'schoolDegree')">School, Degree</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Skills -->
+            <section class="cz-card d-flex flex-column glass">
+              <h3 class="panel-title">Skills</h3>
+              <div class="cz-grid d-grid grid-5">
+                <button type="button" class="opt" *ngFor="let st of skillStyles" [class.active]="sec('skills.style') === st.id" (click)="pick('sections.skills.style', st.id)">{{ st.label }}</button>
+              </div>
+
+              <!-- Grid: number of columns -->
+              <div class="cz-grid d-grid grid-4" *ngIf="sec('skills.style') === 'grid'">
+                <button type="button" class="opt cz-cols" *ngFor="let n of skillColumnChoices" [class.active]="skillCols === n" [attr.aria-label]="n + (n === 1 ? ' column' : ' columns')" [attr.title]="n + (n === 1 ? ' column' : ' columns')" (click)="pick('sections.skills.columns', n)">
+                  <span class="cz-col-ic d-flex"><i *ngFor="let c of skillColumnChoices.slice(0, n)"></i></span>
+                </button>
+              </div>
+
+              <!-- Rows -->
+              <ng-container *ngIf="sec('skills.style') === 'rows'">
+                <div class="d-flex flex-column gap-2">
+                  <p class="field-label">Row Spacing</p>
+                  <div class="cz-grid d-grid grid-2">
+                    <button type="button" class="opt" [class.active]="sec('skills.rowSpacing') === 'tight'" (click)="pick('sections.skills.rowSpacing', 'tight')">Tight</button>
+                    <button type="button" class="opt" [class.active]="sec('skills.rowSpacing') === 'spacious'" (click)="pick('sections.skills.rowSpacing', 'spacious')">Spacious</button>
+                  </div>
+                </div>
+                <div formGroupName="skills">
+                  <label class="check align-center"><input type="checkbox" formControlName="rowBullets" /><span class="check-box"></span>Start rows with bullets</label>
+                </div>
+              </ng-container>
+
+              <!-- Compact -->
+              <div class="cz-grid d-grid grid-3" *ngIf="sec('skills.style') === 'compact'">
+                <button type="button" class="opt" *ngFor="let o of compactSeps" [class.active]="sec('skills.compactSep') === o.id" (click)="pick('sections.skills.compactSep', o.id)">{{ o.label }}</button>
+              </div>
+
+              <!-- Rows + Compact: how the category is joined to its items -->
+              <div class="d-flex flex-column gap-2" *ngIf="sec('skills.style') === 'rows' || sec('skills.style') === 'compact' || sec('skills.style') === 'bubble'">
+                <p class="field-label">Subinfo Style</p>
+                <div class="cz-grid d-grid grid-3">
+                  <button type="button" class="opt" *ngFor="let o of subinfoStyles" [class.active]="sec('skills.subinfo') === o.id" (click)="pick('sections.skills.subinfo', o.id)">{{ o.label }}</button>
+                </div>
+              </div>
+
+              <!-- Level -->
+              <ng-container *ngIf="sec('skills.style') === 'level'">
+                <div class="cz-grid d-grid grid-3">
+                  <button type="button" class="opt" *ngFor="let o of levelStyles" [class.active]="sec('skills.levelStyle') === o.id" (click)="pick('sections.skills.levelStyle', o.id)">{{ o.label }}</button>
+                </div>
+                <div class="cz-info d-flex align-start" *ngIf="noSkillLevels">
+                  <svg viewBox="0 0 16 16" width="16" height="16"><circle cx="8" cy="8" r="7" fill="#3b82f6"/><path d="M8 7v4M8 4.8v.1" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  <span>None of your skills have a level yet. Add a level to a skill to make this style visible.</span>
+                </div>
+              </ng-container>
+            </section>
+
+            <!-- Languages -->
+            <section class="cz-card d-flex flex-column glass">
+              <h3 class="panel-title">Languages</h3>
+              <p class="text-muted" *ngIf="!hasLanguages">To see design options, add languages.</p>
+              <div class="cz-grid d-grid grid-2" *ngIf="hasLanguages">
+                <button type="button" class="opt" [class.active]="sec('languages.style') === 'dots'" (click)="pick('sections.languages.style', 'dots')">Dots</button>
+                <button type="button" class="opt" [class.active]="sec('languages.style') === 'text'" (click)="pick('sections.languages.style', 'text')">Text</button>
+              </div>
+            </section>
+
+            <!-- Declaration -->
+            <section class="cz-card d-flex flex-column glass">
+              <h3 class="panel-title">Declaration</h3>
+              <div class="d-flex flex-column gap-3" formGroupName="declaration">
+                <label class="check align-center"><input type="checkbox" formControlName="showHeading" /><span class="check-box"></span>Show section heading</label>
+              </div>
+              <div class="d-flex flex-column gap-2">
+                <p class="field-label">Position</p>
+                <div class="cz-grid d-grid grid-2">
+                  <button type="button" class="opt" [class.active]="sec('declaration.position') === 'left'" (click)="pick('sections.declaration.position', 'left')">Left</button>
+                  <button type="button" class="opt" [class.active]="sec('declaration.position') === 'right'" (click)="pick('sections.declaration.position', 'right')">Right</button>
+                </div>
+              </div>
+            </section>
+          </ng-container>
+        </div>
+        </div>
+      </div>
+
+      <div class="preview-panel d-flex flex-column align-center">
+        <div class="preview-scale zoomable" (click)="viewerOpen = true" title="Click to enlarge">
+          <app-resume-pages [profile]="previewProfile"></app-resume-pages>
+        </div>
+      </div>
+    </ng-container>
+
+  </form>
+
+  <!-- ======= FULL-SCREEN CV VIEWER ======= -->
+  <app-resume-viewer *ngIf="viewerOpen" [profile]="previewProfile" (closed)="viewerOpen = false"></app-resume-viewer>
+
+  <!-- ======= EDIT HEADING POPUP ======= -->
+  <div class="heading-popup-overlay" *ngIf="editingHeadingKey" (click)="closeEditHeading()"></div>
+  <div class="heading-popup" *ngIf="editingHeadingKey">
+    <div class="heading-popup-topbar d-flex align-center gap-2">
+      <div class="heading-popup-topbar-left">
+        <button type="button" class="btn-icon sm" title="Toggle icon visibility" (click)="toggleHeadingIcon()">
+          <app-section-icon [name]="editingHeadingIconVisible ? tempIconName : 'eye-off'" [size]="16"></app-section-icon>
+        </button>
+      </div>
+      <input
+        class="field-input heading-popup-input"
+        [(ngModel)]="tempHeadingText"
+        [ngModelOptions]="{standalone: true}"
+        placeholder="Section heading..."
+        (keyup.enter)="confirmEditHeading()"
+        (keyup.escape)="closeEditHeading()"
+        autofocus
+      />
+      <button type="button" class="btn-primary btn-sm" (click)="confirmEditHeading()">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none"><path d="M3 8l4 4 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Done
+      </button>
+    </div>
+
+    <div class="heading-popup-body d-flex flex-column">
+      <div class="heading-popup-section-label">Show/hide icon</div>
+      <div class="heading-popup-toggle-row d-flex align-center">
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="editingHeadingIconVisible" [ngModelOptions]="{standalone: true}"/>
+          <span class="toggle-track"></span>
+        </label>
+        <span class="toggle-label d-flex align-center" [class.hidden-label]="!editingHeadingIconVisible">
+          <app-section-icon [name]="editingHeadingIconVisible ? tempIconName : 'eye-off'" [size]="14"></app-section-icon>
+          {{ editingHeadingIconVisible ? 'Visible' : 'Hidden' }}
+        </span>
+      </div>
+
+      <div class="heading-popup-section-label">Default icons</div>
+      <div class="heading-icons-grid d-grid">
+        <button type="button" class="heading-icon-btn d-flex align-center justify-center" *ngFor="let ic of headingIcons.slice(0,15)" title="{{ ic }}"
+          [class.selected]="editingHeadingIconVisible && tempIconName === ic" (click)="selectHeadingIcon(ic)">
+          <app-section-icon [name]="ic" [size]="18"></app-section-icon>
+        </button>
+      </div>
+
+      <div class="heading-popup-section-label">More</div>
+      <div class="heading-icons-grid d-grid">
+        <button type="button" class="heading-icon-btn d-flex align-center justify-center" *ngFor="let ic of headingIcons.slice(15)" title="{{ ic }}"
+          [class.selected]="editingHeadingIconVisible && tempIconName === ic" (click)="selectHeadingIcon(ic)">
+          <app-section-icon [name]="ic" [size]="18"></app-section-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

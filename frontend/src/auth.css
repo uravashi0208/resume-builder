@@ -1,0 +1,62 @@
+/* ═══════════════════════════════════════════════════════════════
+   AUTH LAYOUT — shared by Login + Register (loaded globally).
+   Uses only design tokens from styles.css.
+   ═══════════════════════════════════════════════════════════════ */
+.auth-stage {
+  position: relative; isolation: isolate; overflow: hidden; min-height: 100vh;
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(360px, 480px); align-items: center;
+  gap: clamp(1rem, 4vw, 4rem); padding: clamp(1.25rem, 4vw, 3.5rem) clamp(1.25rem, 6vw, 6rem);
+  background: var(--bg-page);
+}
+
+/* backdrop */
+.orb { position: absolute; z-index: -1; border-radius: 50%; filter: blur(70px); opacity: .5; animation: drift 18s ease-in-out infinite alternate; }
+.orb-1 { width: 46vmax; height: 46vmax; left: -14vmax; top: -16vmax; background: radial-gradient(circle, var(--brand-light), transparent 65%); }
+.orb-2 { width: 38vmax; height: 38vmax; right: -10vmax; top: -8vmax; background: radial-gradient(circle, var(--pink), transparent 65%); opacity: .38; animation-duration: 22s; animation-delay: -6s; }
+.orb-3 { width: 42vmax; height: 42vmax; right: 6vmax; bottom: -22vmax; background: radial-gradient(circle, var(--apricot), transparent 65%); opacity: .42; animation-duration: 26s; animation-delay: -12s; }
+.grid-fade {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; background-size: 44px 44px;
+  background-image: linear-gradient(var(--brand-glow) 1px, transparent 1px), linear-gradient(90deg, var(--brand-glow) 1px, transparent 1px);
+  -webkit-mask-image: radial-gradient(70% 70% at 40% 40%, #000 0%, transparent 100%);
+          mask-image: radial-gradient(70% 70% at 40% 40%, #000 0%, transparent 100%);
+}
+@keyframes drift { to { transform: translate3d(4vmax, 3vmax, 0) scale(1.12); } }
+
+/* hero (left) */
+.auth-hero { display: flex; flex-direction: column; align-items: flex-start; gap: 1.1rem; max-width: 640px; animation: fadeUp .7s cubic-bezier(.2,.7,.2,1) both; }
+.auth-brand { display: inline-flex; align-items: center; gap: .65rem; margin-bottom: 1.6rem; font-weight: 700; }
+.hero-title { font-size: clamp(2.4rem, 5.2vw, 4.1rem); margin-top: .2rem; }
+.hero-title em { font-style: italic; font-weight: 500; padding-right: .06em; }
+.hero-sub { max-width: 34rem; font-size: 1.05rem; line-height: 1.65; color: var(--text-secondary); }
+.hero-chips { list-style: none; display: flex; flex-wrap: wrap; gap: .55rem; margin-top: .4rem; }
+.hero-chips li { padding: .42rem .85rem; border-radius: var(--r-pill); font-size: var(--fs-sm); font-weight: 600; color: var(--brand-dark); background: var(--glass-bg); border: 1px solid var(--border-brand); }
+
+/* floating paper stack */
+.paper-stage { position: relative; width: min(100%, 430px); height: 250px; margin-top: 1.6rem; perspective: 900px; }
+.paper { position: absolute; width: 210px; height: 270px; border-radius: 14px; background: var(--bg-card); box-shadow: var(--shadow-lg); }
+.paper-back  { left: 130px; top: -6px; transform: rotateY(-14deg) rotateZ(7deg); background: var(--grad-brand-soft); animation: float 7s ease-in-out infinite -2s; }
+.paper-front { left: 20px; top: 10px; padding: 18px; display: flex; flex-direction: column; gap: 8px; transform: rotateY(10deg) rotateZ(-5deg); animation: float 6s ease-in-out infinite; }
+.p-head   { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.p-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--grad-brand); flex: none; }
+.l { display: block; height: 6px; border-radius: 4px; background: var(--border); }
+.l.soft { background: var(--bg-subtle); margin-top: 6px; }
+.l.bar  { height: 14px; background: var(--brand-soft); margin: 5px 0 2px; }
+.w90 { width: 90%; } .w85 { width: 85%; } .w80 { width: 80%; } .w70 { width: 70%; } .w60 { width: 80px; } .w55 { width: 55%; } .w40 { width: 52px; }
+.float-badge { position: absolute; padding: .45rem .8rem; border-radius: var(--r-pill); font-size: var(--fs-xs); font-weight: 700; white-space: nowrap; color: var(--text-primary); background: var(--glass-bg); box-shadow: var(--shadow-md); animation: float 5s ease-in-out infinite; }
+.fb-1 { right: 0; top: 24px; color: var(--success); animation-delay: -1s; }
+.fb-2 { right: 40px; bottom: 6px; color: var(--pink); animation-delay: -3s; }
+
+/* form card (right) */
+.auth-panel { display: flex; justify-content: center; animation: fadeUp .7s .12s cubic-bezier(.2,.7,.2,1) both; }
+.auth-card { width: 100%; max-width: 440px; padding: 2.4rem 2.2rem 2rem; border-radius: var(--r-xl); box-shadow: var(--shadow-lg); }
+.auth-card h2 { font-size: 2.2rem; margin: .4rem 0 .15rem; }
+.auth-subtitle { margin-bottom: 1.6rem; font-size: var(--fs-md); color: var(--text-muted); }
+.auth-fields   { display: flex; flex-direction: column; gap: 1rem; }
+.auth-card .btn-block { margin-top: 1.5rem; }
+.auth-card .msg-error { margin-top: .85rem; text-align: center; }
+.switch-link   { margin-top: 1.2rem; text-align: center; font-size: var(--fs-md); color: var(--text-muted); }
+.switch-link a { color: var(--brand); font-weight: 700; }
+.switch-link a:hover { color: var(--pink); }
+
+@media (max-width: 960px) { .auth-stage { grid-template-columns: 1fr; padding: 1.25rem; } .auth-hero { display: none; } }
+@media (prefers-reduced-motion: reduce) { .orb, .paper, .float-badge, .auth-hero, .auth-panel { animation: none !important; } }

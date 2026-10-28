@@ -1,0 +1,4 @@
+backend/be.tar
+.env
+.env.*
+!.env.example

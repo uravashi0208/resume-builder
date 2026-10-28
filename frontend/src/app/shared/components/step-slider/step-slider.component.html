@@ -1,0 +1,16 @@
+<div class="d-flex flex-column gap-2">
+  <div class="d-flex justify-between align-center">
+    <span class="ss-label">{{ label }}</span>
+    <span class="ss-value">{{ text }}</span>
+  </div>
+  <div class="d-flex align-center gap-2">
+    <div class="ss-track">
+      <div class="ss-ticks d-flex justify-between align-center"><i *ngFor="let t of tickList"></i></div>
+      <input type="range" [min]="min" [max]="max" [step]="step"
+             [value]="value" [disabled]="disabled"
+             (input)="onInput($event)" [attr.aria-label]="label" />
+    </div>
+    <button type="button" class="opt opt-sq" (click)="nudge(-1)" [disabled]="disabled || atMin" aria-label="Decrease">−</button>
+    <button type="button" class="opt opt-sq" (click)="nudge(1)" [disabled]="disabled || atMax" aria-label="Increase">+</button>
+  </div>
+</div>

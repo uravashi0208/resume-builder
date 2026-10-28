@@ -1,0 +1,26 @@
+.field-input.dimmed { opacity: .45; }
+
+/* month-year / year mode */
+.my-trigger { cursor: pointer; user-select: none; }
+.my-placeholder { color: var(--text-muted); }
+.my-clear { background: none; border: none; cursor: pointer; padding: 0 2px; font-size: var(--fs-sm); color: var(--text-muted); }
+.my-clear:hover { color: var(--danger); }
+
+.my-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 200; overflow: hidden;
+  width: 440px; max-width: calc(100vw - 32px);
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-md); box-shadow: var(--shadow-md);
+}
+.my-dropdown.year-only { width: 300px; }
+.my-dropdown.narrow .my-body { flex-direction: column; }
+.my-dropdown.narrow .my-months { flex: none; padding: 0 0 10px; border-right: none; border-bottom: 1px solid var(--border); }
+
+.my-present { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: var(--fs-md); color: var(--text-primary); cursor: pointer; user-select: none; }
+
+.my-body { display: flex; gap: 10px; padding: 12px; }
+.my-body.disabled { opacity: .4; pointer-events: none; }
+.my-months { flex: 0 0 150px; grid-template-columns: repeat(3, 1fr); gap: 6px; align-content: start; padding-right: 10px; border-right: 1px solid var(--border); }
+.my-years { flex: 1; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 6px; align-content: start; max-height: 190px; overflow-y: auto; }
+.my-months button, .my-years button { padding: 8px 4px; border: none; border-radius: var(--r-sm); background: none; font-size: var(--fs-md); color: var(--text-secondary); cursor: pointer; }
+.my-months button:hover, .my-years button:hover { background: var(--bg-subtle); }
+.my-months button.selected, .my-years button.selected { background: var(--brand); color: var(--on-brand); font-weight: 600; }

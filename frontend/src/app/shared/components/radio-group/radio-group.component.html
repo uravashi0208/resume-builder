@@ -1,0 +1,26 @@
+<!-- src/app/shared/components/radio-group/radio-group.component.html -->
+<div class="field gap-2">
+  <span *ngIf="label" class="field-label">
+    {{ label }}<span *ngIf="required" class="required-star"> *</span>
+  </span>
+
+  <div [ngClass]="layout === 'horizontal' ? 'd-flex flex-wrap gap-4' : 'd-flex flex-column gap-2'">
+    <label
+      *ngFor="let opt of options"
+      class="check"
+      [class.selected]="isSelected(opt)"
+      [class.disabled]="disabled || opt.disabled"
+      (click)="select(opt)"
+    >
+      <span class="check-box round" [class.checked]="isSelected(opt)">
+        <span *ngIf="isSelected(opt)" class="dot"></span>
+      </span>
+      <span class="check-text">
+        <span>{{ opt.label }}</span>
+        <span *ngIf="opt.description" class="check-desc">{{ opt.description }}</span>
+      </span>
+    </label>
+  </div>
+
+  <small *ngIf="isInvalid" class="field-error">Please select an option.</small>
+</div>

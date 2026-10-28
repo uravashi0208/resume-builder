@@ -1,0 +1,37 @@
+<!-- src/app/shared/components/select-field/select-field.component.html -->
+<div class="field" [class.has-error]="isInvalid">
+  <label *ngIf="label" class="field-label">
+    {{ label }}<span *ngIf="required" class="required-star"> *</span>
+  </label>
+
+  <div class="relative">
+    <select
+      class="field-select"
+      [disabled]="disabled"
+      [value]="value"
+      (change)="onChangeEvent($event)"
+      (blur)="onBlur()"
+      [class.is-invalid]="isInvalid"
+      [style.fontFamily]="fontPreview && value ? $any(value) : null"
+    >
+      <option value="" disabled selected hidden>{{ placeholder }}</option>
+      <option
+        *ngFor="let opt of options"
+        [value]="opt.value"
+        [disabled]="opt.disabled ?? false"
+        [selected]="value === opt.value"
+        [style.fontFamily]="fontPreview && opt.value ? $any(opt.value) : null"
+      >
+        {{ opt.label }}
+      </option>
+    </select>
+    <!-- Caret icon -->
+    <svg class="select-caret" viewBox="0 0 16 16" width="14" height="14">
+      <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8"
+        fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <small *ngIf="hint && !isInvalid" class="field-hint">{{ hint }}</small>
+  <small *ngIf="isInvalid && firstError" class="field-error">{{ firstError }}</small>
+</div>

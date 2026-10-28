@@ -1,0 +1,251 @@
+.resume.t3 {
+  display: flex;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* ---- Sidebar ---- */
+.t3-sidebar {
+  background: var(--t-primary, #0f172a);
+  color: #cbd5e1;
+  width: 34%;
+  padding: 1.8rem 1.4rem;
+}
+
+.t3-contact-item {
+  font-size: 0.78rem;
+  margin-bottom: 0.6rem;
+  word-break: break-all;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.t3-icon-badge {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.t3-icon-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.icon-phone { background: #22c55e; }
+.icon-mail { background: #f97316; }
+.icon-web { background: #0ea5e9; }
+.icon-location { background: #ec4899; }
+
+.t3-section {
+  margin-top: 1.6rem;
+}
+
+.t3-section h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--t-accent, #fbbf24);
+  border-bottom: 1px solid #334155;
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+
+.t3-edu,
+.t3-skill-group {
+  margin-bottom: 0.8rem;
+}
+
+.t3-degree,
+.t3-skill-cat {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0 0 0.15rem;
+}
+
+.t3-meta {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0.1rem 0;
+}
+
+.t3-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.t3-list li {
+  position: relative;
+  padding-left: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.t3-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  width: 6px;
+  height: 6px;
+  background: var(--t-accent, #fbbf24);
+}
+
+.t3-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.t3-interest-pill {
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 0.72rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+.t3-social {
+  display: flex;
+  gap: 0.7rem;
+  margin-top: 1.6rem;
+}
+
+.t3-social a {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #1e293b;
+  color: var(--t-accent, #fbbf24);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  text-decoration: none;
+}
+
+/* ---- Main content ---- */
+.t3-main {
+  flex: 1;
+  background: #f8fafc;
+}
+
+.t3-hero {
+  background: var(--t-accent, #fbbf24);
+  padding: 2rem 2rem 1.6rem;
+}
+
+.t3-hero h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  letter-spacing: 0.03em;
+  color: #1e293b;
+  text-transform: uppercase;
+}
+
+.t3-hero p {
+  margin: 0.3rem 0 0;
+  color: #44403c;
+  font-size: 0.9rem;
+}
+
+.t3-body-section {
+  padding: 1.4rem 2rem 0;
+}
+
+.t3-body-section h2 {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #1e293b;
+  border-bottom: 2px solid var(--t-accent, #fde68a);
+  padding-bottom: 0.3rem;
+}
+
+.t3-about {
+  font-size: 0.88rem;
+  color: #475569;
+  line-height: 1.55;
+}
+
+.t3-timeline {
+  border-left: 2px solid var(--t-accent, #fde68a);
+  padding-left: 1.2rem;
+  margin-top: 0.5rem;
+}
+
+.t3-timeline-item {
+  position: relative;
+  margin-bottom: 1.4rem;
+}
+
+.t3-dot {
+  position: absolute;
+  left: -1.53rem;
+  top: 0.2rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #fff;
+}
+
+.t3-exp-meta {
+  font-size: 0.75rem;
+  color: #22c55e;
+  font-style: italic;
+  margin: 0 0 0.15rem;
+}
+
+.t3-timeline-content h4 {
+  margin: 0 0 0.3rem;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.t3-desc {
+  font-size: 0.85rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .resume.t3 {
+    flex-direction: column;
+  }
+  .t3-sidebar {
+    width: 100%;
+  }
+}
+
+.t3-same-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.t3-same-line h1,
+.t3-same-line p { margin: 0 0 0.2rem; }
+
+.t3-contact-inline {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.7rem;
+}
+
+.t3-contact-columns {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 0.5rem;
+}

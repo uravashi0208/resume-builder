@@ -1,0 +1,5 @@
+.cv-view-container { padding: 2rem 1.5rem; min-height: calc(100vh - var(--navbar-h)); animation: fadeUp .35s ease both; }
+.cv-toolbar { margin-bottom: 1.5rem; padding: .85rem 1.25rem; }
+.cv-toolbar .card-title { padding: 0; border: 0; }
+.empty-state { padding: 3rem; }
+.cv-sheet { max-width: 900px; margin: 0 auto; }

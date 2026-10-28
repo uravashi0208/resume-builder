@@ -1,0 +1,185 @@
+<!-- src/app/components/profile-form/profile-form.component.html
+     Uses shared components: app-input-field, app-textarea-field, app-date-picker, app-checkbox-field -->
+<div class="page-shell" style="--page-w:680px">
+  <h2 class="page-title">Fill Your Profile Details</h2>
+  <p class="text-muted mb-2">Template: <b>{{ selectedTemplate }}</b></p>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+
+    <!-- Basic Info -->
+    <section class="card form-card d-flex flex-column">
+      <h3 class="card-title">Basic Info</h3>
+      <div class="d-grid grid-2 gap-3">
+        <app-input-field label="Full Name" placeholder="Parth Modi"
+          [required]="true" [control]="profileForm.get('fullName')"
+          formControlName="fullName">
+        </app-input-field>
+        <app-input-field label="Professional Title" placeholder="Frontend Developer"
+          [required]="true" [control]="profileForm.get('professionalTitle')"
+          formControlName="professionalTitle">
+        </app-input-field>
+      </div>
+      <div class="d-grid grid-2 gap-3">
+        <app-input-field label="Email" type="email" placeholder="you@example.com"
+          [required]="true" [control]="profileForm.get('email')"
+          formControlName="email">
+        </app-input-field>
+        <app-input-field label="Phone" placeholder="+91-9033511367"
+          [required]="true" [control]="profileForm.get('phone')"
+          formControlName="phone">
+        </app-input-field>
+      </div>
+      <app-input-field label="Location" placeholder="Gandhinagar, Gujarat, India"
+        formControlName="location">
+      </app-input-field>
+      <app-rich-editor
+        label="About Me"
+        placeholder="Short bio about yourself..."
+        [showAlign]="true"
+        formControlName="aboutMe">
+      </app-rich-editor>
+    </section>
+
+    <!-- Education -->
+    <section class="card form-card d-flex flex-column">
+      <h3 class="card-title">Education</h3>
+      <div formArrayName="education">
+        <div class="block-card" *ngFor="let edu of education.controls; let i = index" [formGroupName]="i">
+          <div class="d-grid grid-2 gap-3">
+            <app-input-field label="Degree" placeholder="B.E. Mechatronics" formControlName="degree"></app-input-field>
+            <app-input-field label="Institute" placeholder="GTU" formControlName="institute"></app-input-field>
+          </div>
+          <div class="d-grid grid-2 gap-3">
+            <app-input-field label="Duration" placeholder="2011 - 2015" formControlName="duration"></app-input-field>
+            <app-input-field label="Score" placeholder="7.10 CGPA" formControlName="score"></app-input-field>
+          </div>
+          <app-rich-editor
+            label="Description"
+            placeholder="Relevant coursework, achievements, honors..."
+            minHeight="80px"
+            formControlName="description">
+          </app-rich-editor>
+          <button type="button" class="btn-icon danger sm block-remove-corner"
+            (click)="removeEducation(i)" *ngIf="education.length > 1" title="Remove" aria-label="Remove">
+            <svg viewBox="0 0 14 14" width="12" height="12" fill="none">
+              <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button type="button" class="btn-add" (click)="addEducation()">+ Add Education</button>
+    </section>
+
+    <!-- Core Competencies -->
+    <section class="card form-card d-flex flex-column">
+      <h3 class="card-title">Core Competencies</h3>
+      <div formArrayName="coreCompetencies">
+        <div class="dynamic-row" *ngFor="let c of coreCompetencies.controls; let i = index">
+          <app-input-field placeholder="e.g. Team Leadership" [formControlName]="i" style="flex:1"></app-input-field>
+          <button type="button" class="btn-danger" (click)="removeCompetency(i)" *ngIf="coreCompetencies.length > 1">✕</button>
+        </div>
+      </div>
+      <button type="button" class="btn-add" (click)="addCompetency()">+ Add Competency</button>
+    </section>
+
+    <!-- Technical Skills -->
+    <section class="card form-card d-flex flex-column">
+      <h3 class="card-title">Technical Skills</h3>
+      <div formArrayName="technicalSkills" class="d-flex flex-column gap-3">
+        <div class="block-card" *ngFor="let s of technicalSkills.controls; let i = index" [formGroupName]="i">
+          <div class="block-card-header">
+            <app-input-field label="Category" placeholder="e.g. Frontend" formControlName="category"></app-input-field>
+            <button type="button" class="btn-icon danger sm block-remove-corner" (click)="removeSkillGroup(i)"
+              *ngIf="technicalSkills.length > 1" title="Remove skill group">
+              <svg viewBox="0 0 14 14" width="12" height="12" fill="none">
+                <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <app-rich-editor
+            label="Skills"
+            placeholder="React.js, TypeScript, JavaScript..."
+            minHeight="60px"
+            formControlName="items">
+          </app-rich-editor>
+        </div>
+      </div>
+      <button type="button" class="btn-add" (click)="addSkillGroup()">+ Add Skill Group</button>
+    </section>
+
+    <!-- Interests -->
+    <section class="card form-card d-flex flex-column">
+      <h3 class="card-title">Interests</h3>
+      <div formArrayName="interests">
+        <div class="dynamic-row" *ngFor="let it of interests.controls; let i = index">
+          <app-input-field placeholder="e.g. Photography" [formControlName]="i" style="flex:1"></app-input-field>
+          <button type="button" class="btn-danger" (click)="removeInterest(i)" *ngIf="interests.length > 1">✕</button>
+        </div>
+      </div>
+      <button type="button" class="btn-add" (click)="addInterest()">+ Add Interest</button>
+    </section>
+
+    <!-- Experience -->
+    <section class="card form-card d-flex flex-column">
+      <h3 class="card-title">Experience</h3>
+      <div formArrayName="experience">
+        <div class="block-card" *ngFor="let exp of experience.controls; let i = index" [formGroupName]="i">
+          <div class="d-grid grid-2 gap-3">
+            <app-input-field label="Role" placeholder="SDE III" formControlName="role"></app-input-field>
+            <app-input-field label="Company" placeholder="Company" formControlName="company"></app-input-field>
+          </div>
+          <app-input-field label="Location" placeholder="Bangalore, India" formControlName="location"></app-input-field>
+          <div class="d-flex align-center flex-wrap gap-3">
+            <app-date-picker label="Start Date" mode="month-year" formControlName="startDate" style="flex:1"></app-date-picker>
+            <app-date-picker label="End Date" mode="month-year" [allowPresent]="true" formControlName="endDate" style="flex:1"></app-date-picker>
+          </div>
+          <app-rich-editor
+            label="Description"
+            placeholder="Description of your role and achievements..."
+            minHeight="90px"
+            formControlName="description">
+          </app-rich-editor>
+          <button type="button" class="btn-icon danger sm block-remove-corner"
+            (click)="removeExperience(i)" *ngIf="experience.length > 1" title="Remove" aria-label="Remove">
+            <svg viewBox="0 0 14 14" width="12" height="12" fill="none">
+              <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button type="button" class="btn-add" (click)="addExperience()">+ Add Experience</button>
+    </section>
+
+    <!-- Social Links -->
+    <section class="card" formGroupName="socialLinks">
+      <h3 class="card-title">Social Links</h3>
+      <div class="d-grid grid-2 gap-3">
+        <app-input-field label="LinkedIn" placeholder="LinkedIn URL" type="url" formControlName="linkedin"></app-input-field>
+        <app-input-field label="GitHub" placeholder="GitHub URL" type="url" formControlName="github"></app-input-field>
+      </div>
+      <div class="d-grid grid-2 gap-3">
+        <app-input-field label="Portfolio" placeholder="Portfolio URL" type="url" formControlName="portfolio"></app-input-field>
+        <app-input-field label="Twitter / X" placeholder="Twitter URL" type="url" formControlName="twitter"></app-input-field>
+      </div>
+    </section>
+
+    <!-- GDPR Consent -->
+    <section class="card form-card d-flex flex-column">
+      <h3 class="card-title">GDPR Consent</h3>
+      <app-textarea-field
+        label="Consent text"
+        hint="Shown at the bottom of your CV. Edit if needed, or leave empty to hide it."
+        [rows]="4"
+        formControlName="gdprConsent">
+      </app-textarea-field>
+      <button type="button" class="btn-ghost" (click)="resetGdprConsent()">Reset to default</button>
+    </section>
+
+    <p class="msg-success" *ngIf="successMsg">{{ successMsg }}</p>
+    <p class="msg-error"   *ngIf="errorMsg">{{ errorMsg }}</p>
+
+    <button type="submit" class="btn-primary" [disabled]="saving">
+      {{ saving ? 'Saving...' : 'Save Profile' }}
+    </button>
+  </form>
+</div>

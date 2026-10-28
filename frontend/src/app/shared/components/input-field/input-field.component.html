@@ -1,0 +1,21 @@
+<!-- src/app/shared/components/input-field/input-field.component.html -->
+<div class="field" [class.has-error]="isInvalid">
+  <label *ngIf="label" class="field-label">
+    {{ label }}<span *ngIf="required" class="required-star"> *</span>
+  </label>
+
+  <input
+    class="field-input"
+    [type]="type"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [value]="displayValue"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+    [class.is-invalid]="isInvalid"
+    autocomplete="off"
+  />
+
+  <small *ngIf="hint && !isInvalid" class="field-hint">{{ hint }}</small>
+  <small *ngIf="isInvalid && firstError" class="field-error">{{ firstError }}</small>
+</div>

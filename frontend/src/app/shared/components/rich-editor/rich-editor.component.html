@@ -1,0 +1,109 @@
+<!-- src/app/shared/components/rich-editor/rich-editor.component.html -->
+<div class="field" [class.re-disabled]="disabled">
+
+  <label *ngIf="label" class="field-label">
+    {{ label }}<span *ngIf="required" class="required-star"> *</span>
+  </label>
+
+  <!-- ── Toolbar ── -->
+  <div class="toolbar">
+
+    <!-- Bold -->
+    <button type="button" class="toolbar-btn" [class.active]="isBold"
+      title="Bold (Ctrl+B)" (mousedown)="$event.preventDefault()" (click)="toggleBold()">
+      <span class="re-icon-b">B</span>
+    </button>
+
+    <!-- Italic -->
+    <button type="button" class="toolbar-btn" [class.active]="isItalic"
+      title="Italic (Ctrl+I)" (mousedown)="$event.preventDefault()" (click)="toggleItalic()">
+      <span class="re-icon-i">I</span>
+    </button>
+
+    <!-- Underline -->
+    <button type="button" class="toolbar-btn" [class.active]="isUnderline"
+      title="Underline (Ctrl+U)" (mousedown)="$event.preventDefault()" (click)="toggleUnderline()">
+      <span class="re-icon-u">U</span>
+    </button>
+
+    <!-- Bullet list -->
+    <button type="button" class="toolbar-btn" [class.active]="isBullet"
+      title="Bullet List" (mousedown)="$event.preventDefault()" (click)="toggleBulletList()">
+      <!-- Bullet list icon -->
+      <svg viewBox="0 0 16 14" width="15" height="13" fill="none">
+        <circle cx="2"  cy="2.5"  r="1.2" fill="currentColor"/>
+        <circle cx="2"  cy="7"    r="1.2" fill="currentColor"/>
+        <circle cx="2"  cy="11.5" r="1.2" fill="currentColor"/>
+        <line x1="5.5" y1="2.5"  x2="15" y2="2.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="5.5" y1="7"    x2="15" y2="7"    stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="5.5" y1="11.5" x2="15" y2="11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <!-- Link (optional) -->
+    <button *ngIf="showLink" type="button" class="toolbar-btn"
+      title="Insert Link" (mousedown)="$event.preventDefault()" (click)="insertLink()">
+      <!-- Link/chain icon -->
+      <svg viewBox="0 0 16 16" width="15" height="15" fill="none">
+        <path d="M6.5 9.5a3.5 3.5 0 0 0 5 0l2-2a3.535 3.535 0 0 0-5-5L7 4"
+          stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M9.5 6.5a3.5 3.5 0 0 0-5 0l-2 2a3.535 3.535 0 0 0 5 5L9 12"
+          stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <span class="toolbar-sep"></span>
+
+    <!-- Align Left -->
+    <button *ngIf="showAlign" type="button" class="toolbar-btn"
+      [class.active]="alignment === 'left'"
+      title="Align Left" (mousedown)="$event.preventDefault()" (click)="setAlign('left')">
+      <svg viewBox="0 0 16 12" width="15" height="12" fill="none">
+        <line x1="1" y1="1.5"  x2="15" y2="1.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="1" y1="5.5"  x2="10" y2="5.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="1" y1="9.5"  x2="15" y2="9.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <!-- Align Center -->
+    <button *ngIf="showAlign" type="button" class="toolbar-btn"
+      [class.active]="alignment === 'center'"
+      title="Align Center" (mousedown)="$event.preventDefault()" (click)="setAlign('center')">
+      <svg viewBox="0 0 16 12" width="15" height="12" fill="none">
+        <line x1="1"   y1="1.5"  x2="15"  y2="1.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="3.5" y1="5.5"  x2="12.5" y2="5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="1"   y1="9.5"  x2="15"  y2="9.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <!-- Align Right -->
+    <button *ngIf="showAlign" type="button" class="toolbar-btn"
+      [class.active]="alignment === 'right'"
+      title="Align Right" (mousedown)="$event.preventDefault()" (click)="setAlign('right')">
+      <svg viewBox="0 0 16 12" width="15" height="12" fill="none">
+        <line x1="1"  y1="1.5"  x2="15" y2="1.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="6"  y1="5.5"  x2="15" y2="5.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="1"  y1="9.5"  x2="15" y2="9.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <!-- Justify -->
+    <button *ngIf="showAlign" type="button" class="toolbar-btn"
+      [class.active]="alignment === 'justify'"
+      title="Justify" (mousedown)="$event.preventDefault()" (click)="setAlign('justify')">
+      <svg viewBox="0 0 16 12" width="15" height="12" fill="none">
+        <line x1="1" y1="1.5"  x2="15" y2="1.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="1" y1="5.5"  x2="15" y2="5.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="1" y1="9.5"  x2="15" y2="9.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+  </div>
+
+  <!-- ── Editable area (TipTap mounts here) ── -->
+  <div #editor class="field-input re-editor" [class.is-invalid]="isInvalid"></div>
+
+  <small *ngIf="hint && !isInvalid" class="field-hint">{{ hint }}</small>
+  <small *ngIf="isInvalid && firstError" class="field-error">{{ firstError }}</small>
+
+</div>

@@ -1,0 +1,10 @@
+<div class="rv-backdrop no-print" (click)="close()" role="dialog" aria-modal="true" aria-label="CV preview">
+  <button type="button" class="rv-close btn-icon" aria-label="Close preview" (click)="close(); $event.stopPropagation()">
+    <svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M3.5 3.5l9 9m0-9l-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+  <div class="rv-scroll">
+    <div class="rv-sheet" (click)="$event.stopPropagation()">
+      <app-resume-pages [profile]="profile"></app-resume-pages>
+    </div>
+  </div>
+</div>

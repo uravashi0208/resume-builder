@@ -1,0 +1,86 @@
+<div class="page-shell">
+  <div class="page-head">
+    <div><p class="eyebrow">Job tracker</p><h2 class="display page-title">My <em class="grad-text">applications</em></h2></div>
+    <button class="btn-primary" (click)="addApplication()"><span class="plus">+</span> Add Application</button>
+  </div>
+
+  <!-- Summary tiles -->
+  <div class="stats d-grid" *ngIf="!loading">
+    <div class="stat glass" *ngFor="let s of stats" [ngClass]="s.cls">
+      <span class="stat-n">{{ s.value }}</span>
+      <span class="stat-l">{{ s.label }}</span>
+    </div>
+  </div>
+
+  <!-- Search + Status filter -->
+  <div class="d-flex align-center gap-3 mb-2">
+    <app-input-field
+      placeholder="Search by company, title or location..."
+      [externalValue]="searchTerm"
+      (input)="onSearchChange($any($event.target).value)"
+      class="flex-1" style="max-width:340px">
+    </app-input-field>
+
+    <select
+      class="field-select status-select"
+      [value]="statusFilter"
+      (change)="onStatusFilterChange($any($event.target).value)"
+    >
+      <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+    </select>
+  </div>
+
+  <p class="msg-error" *ngIf="errorMsg">{{ errorMsg }}</p>
+  <div *ngIf="loading">Loading...</div>
+
+  <!-- Table -->
+  <div class="table-wrapper glass card-round" *ngIf="!loading">
+    <table>
+      <thead>
+        <tr>
+          <th>Company Name</th>
+          <th>Applied Title</th>
+          <th>Apply Date</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let app of pagedApplications">
+          <td>{{ app.companyName }}</td>
+          <td>{{ app.appliedTitle }}</td>
+          <td>{{ app.applyDate }}</td>
+          <td>{{ app.location }}</td>
+          <td><span [ngClass]="statusClass(app.status)">{{ app.status }}</span></td>
+          <td><div class="d-flex align-center flex-wrap gap-2">
+            <button class="btn-ghost btn-sm" (click)="viewCv(app)">View CV</button>
+            <button class="btn-ghost btn-sm" (click)="downloadPdf(app)">Download PDF</button>
+            <button class="btn-ghost btn-sm" (click)="editApplication(app)">Edit</button>
+            <button class="btn-danger btn-sm" (click)="deleteApp(app)">Delete</button>
+          </div></td>
+        </tr>
+
+        <tr *ngIf="pagedApplications.length === 0">
+          <td colspan="6" class="empty-row text-center text-muted">No applications found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination d-flex align-center justify-center gap-2" *ngIf="!loading && totalPages > 1">
+    <button class="opt opt-sm" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">‹ Prev</button>
+
+    <button
+      *ngFor="let p of pageNumbers"
+      class="opt opt-sm"
+      [class.active]="p === currentPage"
+      (click)="goToPage(p)"
+    >
+      {{ p }}
+    </button>
+
+    <button class="opt opt-sm" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next ›</button>
+  </div>
+</div>

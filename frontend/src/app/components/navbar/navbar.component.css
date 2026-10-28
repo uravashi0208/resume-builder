@@ -1,0 +1,18 @@
+/* Floating glass pill — surface comes from .glass, tabs from .tabs */
+.navbar { position: sticky; top: 0; z-index: 100; height: var(--navbar-h); padding: 12px 1.25rem 0; pointer-events: none; }
+.navbar-inner { pointer-events: auto; max-width: 1280px; margin: 0 auto; height: 52px; padding: 0 .55rem 0 .7rem; }
+.brand .logo-mark { --size: 32px; }
+.brand:hover .logo-mark { transform: rotate(-8deg) scale(1.06); }
+.brand-text { font-weight: 500; letter-spacing: -.01em; }
+.brand-text b { margin-left: 1px; font-weight: 800; background: var(--grad-brand); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.logout-btn { border: 0; background: #fdf6f8; color: var(--pink); font-weight: 600; transition: transform var(--t-fast), background var(--t-fast); }
+.logout-btn:hover { background: var(--pink); color: var(--on-brand); transform: translateY(-1px); }
+
+@media (max-width: 560px) {
+  .navbar { padding: 10px .75rem 0; }
+  .brand-text { display: none; }
+  .tabs > * { padding: .36rem .7rem; font-size: var(--fs-sm); }
+  .logout-btn { font-size: 0; gap: 0; padding: .55rem; }   /* icon only */
+  .logout-btn svg { width: 16px; height: 16px; }
+}

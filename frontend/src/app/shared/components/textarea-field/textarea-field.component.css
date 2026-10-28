@@ -1,0 +1,2 @@
+.char-count { margin-left: auto; font-size: var(--fs-xs); color: var(--text-muted); }
+.char-count.near-limit { color: var(--warning); }

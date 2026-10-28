@@ -1,0 +1,18 @@
+<div class="dd" [class.open]="open" [class.disabled]="disabled">
+  <button type="button" class="dd-btn field-input d-flex align-center justify-between gap-2" [disabled]="disabled"
+          [attr.aria-label]="ariaLabel || null" aria-haspopup="listbox" [attr.aria-expanded]="open"
+          (click)="toggle()" (keydown)="onKey($event)">
+    <span class="dd-val">{{ selected?.label || placeholder }}<small *ngIf="selected?.sub"> {{ selected?.sub }}</small></span>
+    <svg class="dd-chev" viewBox="0 0 16 16" width="14" height="14" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <ul class="dd-list" role="listbox" *ngIf="open">
+    <li *ngFor="let o of options; let i = index" role="option"
+        [class.sel]="o.value === value" [class.act]="i === activeIdx"
+        [attr.aria-selected]="o.value === value"
+        (mousedown)="$event.preventDefault()" (click)="choose(o)" (mouseenter)="activeIdx = i">
+      <span class="o-l">{{ o.label }}<small *ngIf="o.sub"> {{ o.sub }}</small></span>
+      <span class="o-h" *ngIf="o.hint">{{ o.hint }}</span>
+    </li>
+  </ul>
+</div>
