@@ -1,18 +1,16 @@
-// backend/config/firebaseAdmin.js
-// Firebase Admin SDK init - connects Node.js backend to Firestore + Firebase Auth
 
 const admin = require("firebase-admin");
-const path = require("path");
 require("dotenv").config();
 
-// Step 1: Firebase Console -> Project Settings -> Service Accounts -> Generate New Private Key
-// Step 2: Save the downloaded JSON as backend/config/serviceAccountKey.json
-const serviceAccount = require(path.join(__dirname, "serviceAccountKey.json"));
+if (!admin.apps.length) {
+  const serviceAccount = JSON.parse(
+    process.env.FIREBASE_SERVICE_ACCOUNT_JSON
+  );
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.FIREBASE_DATABASE_URL,
-});
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
 
 const db = admin.firestore();
 const auth = admin.auth();
