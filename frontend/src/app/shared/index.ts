@@ -11,3 +11,4 @@ export { DatePickerComponent }                    from './components/date-picker
 export { StepSliderComponent }                   from './components/step-slider/step-slider.component';
 export { DropdownComponent, DropdownOption }     from './components/dropdown/dropdown.component';
 export { SideNavComponent, NavItem }              from './components/side-nav/side-nav.component';
+export { AuthLayoutComponent }                 from './components/auth-layout/auth-layout.component';

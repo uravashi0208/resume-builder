@@ -1,0 +1,42 @@
+<div class="auth-stage">
+  <!-- animated backdrop -->
+  <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+  <div class="grid-fade"></div>
+
+  <section class="auth-hero">
+    <a class="auth-brand" routerLink="/login">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#fff" fill-opacity=".95"/><path d="M14 3v4h4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 11h6M9 14h6M9 17h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </span>
+      <span>Resume<b>Builder</b></span>
+    </a>
+
+    <p class="eyebrow">Resume studio</p>
+    <h1 class="display hero-title">{{ heroTitle }} <em class="grad-text">{{ heroAccent }}</em></h1>
+    <p class="hero-sub">{{ heroSub }}</p>
+
+    <ul class="hero-points">
+      <li *ngFor="let p of points">
+        <span class="tick"><svg viewBox="0 0 20 20" width="13" height="13" fill="none"><path d="M4.5 10.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        {{ p }}
+      </li>
+    </ul>
+
+    <div class="paper-stage" aria-hidden="true">
+      <div class="paper paper-back"></div>
+      <div class="paper paper-front">
+        <div class="p-head"><span class="p-avatar"></span><div><i class="l w60"></i><i class="l w40 soft"></i></div></div>
+        <i class="l bar"></i>
+        <i class="l w90"></i><i class="l w80"></i><i class="l w85"></i>
+        <i class="l bar"></i>
+        <i class="l w70"></i><i class="l w90"></i><i class="l w55"></i>
+      </div>
+      <span class="float-badge fb-1">✓ 2 pages · perfect split</span>
+      <span class="float-badge fb-2">Crisp PDF export</span>
+    </div>
+  </section>
+
+  <section class="auth-panel">
+    <ng-content></ng-content>
+  </section>
+</div>

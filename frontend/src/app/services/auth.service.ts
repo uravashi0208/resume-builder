@@ -6,11 +6,27 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
   onAuthStateChanged,
   User,
 } from 'firebase/auth';
 import { BehaviorSubject, Observable, filter } from 'rxjs';
 import { environment } from '../../environments/environment';
+
+/** Firebase error code -> short, human message (shown on login / register). */
+export function authErrorMessage(err: any): string {
+  switch (err?.code) {
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':       return 'Incorrect email or password.';
+    case 'auth/invalid-email':        return 'Enter a valid email address.';
+    case 'auth/email-already-in-use': return 'An account with this email already exists. Try signing in.';
+    case 'auth/weak-password':        return 'Password is too weak. Use at least 6 characters.';
+    case 'auth/too-many-requests':    return 'Too many attempts. Please wait a moment and try again.';
+    case 'auth/network-request-failed': return 'Network error. Check your connection and retry.';
+    default:                          return err?.message || 'Something went wrong. Please try again.';
+  }
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -50,6 +66,10 @@ export class AuthService {
 
   register(email: string, password: string) {
     return createUserWithEmailAndPassword(this.auth, email, password);
+  }
+
+  resetPassword(email: string) {
+    return sendPasswordResetEmail(this.auth, email);
   }
 
   logout() {

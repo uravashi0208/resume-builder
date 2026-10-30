@@ -285,6 +285,10 @@ input, textarea, select { font-family: inherit; }
 .field-input:disabled, .field-textarea:disabled, .field-select:disabled { background: var(--bg-subtle); color: var(--text-muted); cursor: not-allowed; }
 .field-input.is-invalid, .field-textarea.is-invalid, .field-select.is-invalid { border-color: var(--danger); }
 .field-textarea { resize: vertical; }
+.field-control { position: relative; }
+.field-input.has-toggle { padding-right: 2.8rem; }
+.field-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; display: grid; place-items: center; background: none; border: none; border-radius: var(--r-sm); color: var(--text-muted); transition: color var(--t-fast), background var(--t-fast); }
+.field-toggle:hover { color: var(--brand); background: var(--brand-soft); }
 .field-select   { appearance: none; -webkit-appearance: none; padding-right: 2.2rem; cursor: pointer; }
 .field-select option { background: var(--bg-page); color: var(--text-primary); }
 .select-caret { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted); }

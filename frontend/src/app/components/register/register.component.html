@@ -1,66 +1,36 @@
-<div class="auth-stage">
-  <!-- cinematic backdrop -->
-  <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
-  <div class="grid-fade"></div>
+<app-auth-layout
+  heroTitle="Your next role starts with a"
+  heroAccent="great first page."
+  heroSub="Create a free account and craft a résumé recruiters actually finish reading.">
 
-  <section class="auth-hero" aria-hidden="false">
-    <a class="auth-brand" routerLink="/login">
-      <span class="logo-mark">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#fff" fill-opacity=".95"/><path d="M14 3v4h4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 11h6M9 14h6M9 17h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      </span>
-      <span>Resume Builder</span>
-    </a>
+  <form class="auth-card glass" [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+    <nav class="tabs auth-switch">
+      <a routerLink="/login" routerLinkActive="active">Sign in</a>
+      <a routerLink="/register" routerLinkActive="active">Create account</a>
+    </nav>
 
-    <p class="eyebrow">Resume studio</p>
-    <h1 class="display hero-title">Your next role starts with a <em class="grad-text">great first page.</em></h1>
-    <p class="hero-sub">Create a free account and craft a résumé recruiters actually finish reading.</p>
+    <h2 class="display">Get started</h2>
+    <p class="auth-subtitle">It's free — build your first résumé in minutes.</p>
 
-    <ul class="hero-chips">
-      <li>✦ ATS-friendly</li><li>✦ A4 &amp; Letter pages</li><li>✦ 25 languages</li>
-    </ul>
-
-    <!-- floating paper stack -->
-    <div class="paper-stage">
-      <div class="paper paper-back"></div>
-      <div class="paper paper-front">
-        <div class="p-head"><span class="p-avatar"></span><div><i class="l w60"></i><i class="l w40 soft"></i></div></div>
-        <i class="l bar"></i>
-        <i class="l w90"></i><i class="l w80"></i><i class="l w85"></i>
-        <i class="l bar"></i>
-        <i class="l w70"></i><i class="l w90"></i><i class="l w55"></i>
-      </div>
-      <span class="float-badge fb-1">✓ 2 pages · perfect split</span>
-      <span class="float-badge fb-2">Crisp PDF export</span>
+    <div class="auth-fields">
+      <app-input-field label="Email" type="email" placeholder="you@example.com" autocomplete="email"
+        [required]="true" [control]="registerForm.get('email')" formControlName="email">
+      </app-input-field>
+      <app-input-field label="Password" type="password" placeholder="At least 6 characters" autocomplete="new-password"
+        [required]="true" hint="Minimum 6 characters"
+        [control]="registerForm.get('password')" formControlName="password">
+      </app-input-field>
+      <app-input-field label="Confirm password" type="password" placeholder="Repeat your password" autocomplete="new-password"
+        [required]="true" [control]="registerForm.get('confirm')" formControlName="confirm">
+      </app-input-field>
     </div>
-  </section>
 
-  <section class="auth-panel">
-    <form class="auth-card glass" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <p class="eyebrow">Get started</p>
-      <h2 class="display">Create account</h2>
-      <p class="auth-subtitle">Start building your resume today.</p>
+    <p class="msg-error" *ngIf="errorMsg">{{ errorMsg }}</p>
 
-      <div class="auth-fields">
-        <app-input-field label="Email" type="email" placeholder="you@example.com"
-          [required]="true" [control]="registerForm.get('email')"
-          formControlName="email">
-        </app-input-field>
-        <app-input-field label="Password" type="password" placeholder="••••••••"
-          [required]="true" hint="Minimum 6 characters"
-          [control]="registerForm.get('password')"
-          formControlName="password">
-        </app-input-field>
-      </div>
-
-      <p class="msg-error" *ngIf="errorMsg">{{ errorMsg }}</p>
-
-      <button type="submit" class="btn-primary btn-block" [disabled]="registerForm.invalid || loading">
-        <span>{{ loading ? 'Creating...' : 'Create account' }}</span>
-        <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><path d="M4 10h11m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <p class="switch-link">
-        Already have an account? <a routerLink="/login">Sign in</a>
-      </p>
-    </form>
-  </section>
-</div>
+    <button type="submit" class="btn-primary btn-block" [disabled]="registerForm.invalid || loading">
+      <span>{{ loading ? 'Creating…' : 'Create account' }}</span>
+      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><path d="M4 10h11m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="switch-link">Already have an account? <a routerLink="/login">Sign in</a></p>
+  </form>
+</app-auth-layout>

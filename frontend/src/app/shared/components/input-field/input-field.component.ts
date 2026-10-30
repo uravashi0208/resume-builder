@@ -24,6 +24,7 @@ export class InputFieldComponent implements ControlValueAccessor {
   @Input() errorMessage = '';
   @Input() required     = false;
   @Input() disabled     = false;
+  @Input() autocomplete = 'off';
   @Input() control: AbstractControl | null = null;
 
   /**
@@ -31,6 +32,12 @@ export class InputFieldComponent implements ControlValueAccessor {
    * Use [externalValue]="searchTerm" when no formControlName is present.
    */
   @Input() externalValue: string | null = null;
+
+  showPassword = false;
+
+  get inputType(): string {
+    return this.type === 'password' && this.showPassword ? 'text' : this.type;
+  }
 
   // CVA internal value
   cvaValue = '';
@@ -70,6 +77,7 @@ export class InputFieldComponent implements ControlValueAccessor {
     if (ctrl.errors['email'])     return 'Enter a valid email address.';
     if (ctrl.errors['minlength']) return `Minimum ${ctrl.errors['minlength'].requiredLength} characters required.`;
     if (ctrl.errors['maxlength']) return `Maximum ${ctrl.errors['maxlength'].requiredLength} characters allowed.`;
+    if (ctrl.errors['mismatch'])  return 'Passwords do not match.';
     if (ctrl.errors['pattern'])   return 'Invalid format.';
     return Object.keys(ctrl.errors)[0];
   }

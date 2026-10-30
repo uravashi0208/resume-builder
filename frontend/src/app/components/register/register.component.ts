@@ -1,8 +1,14 @@
 // src/app/components/register/register.component.ts
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, authErrorMessage } from '../../services/auth.service';
+
+/** Confirm-password control: error { mismatch } when it differs from the sibling `password` control. */
+function matchPassword(control: AbstractControl): ValidationErrors | null {
+  const pwd = control.parent?.get('password')?.value;
+  return control.value && control.value !== pwd ? { mismatch: true } : null;
+}
 
 @Component({
   selector: 'app-register',
@@ -19,9 +25,14 @@ export class RegisterComponent {
     private router: Router
   ) {
     this.registerForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email:    ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
+      confirm:  ['', [Validators.required, matchPassword]],
     });
+    // re-check "confirm" whenever "password" changes
+    this.registerForm.get('password')!.valueChanges.subscribe(() =>
+      this.registerForm.get('confirm')!.updateValueAndValidity()
+    );
   }
 
   onSubmit() {
@@ -33,7 +44,7 @@ export class RegisterComponent {
     this.authService
       .register(email, password)
       .then(() => this.router.navigate(['/template-select']))
-      .catch((err) => (this.errorMsg = err.message))
+      .catch((err) => (this.errorMsg = authErrorMessage(err)))
       .finally(() => (this.loading = false));
   }
 }
