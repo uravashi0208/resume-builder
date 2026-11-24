@@ -1,16 +1,30 @@
 <div class="cv-view-container">
-  <div class="cv-toolbar card d-flex align-center justify-between no-print">
-    <h2 class="card-title">CV Preview</h2>
-    <button class="btn-primary" (click)="printCv()">⬇ Download as PDF</button>
+  <div class="cv-toolbar card d-flex align-center justify-between">
+    <h2 class="card-title">
+      <ng-container *ngIf="application; else plainTitle">{{ application.companyName }} — {{ application.appliedTitle }}</ng-container>
+      <ng-template #plainTitle>My CV</ng-template>
+    </h2>
+    <button class="btn-secondary" (click)="back()">← Back</button>
   </div>
+
+  <p class="cv-meta text-muted" *ngIf="application">
+    <span *ngIf="application.applyDate">Applied: {{ application.applyDate }}</span>
+    <span *ngIf="application.location">{{ application.location }}</span>
+    <span>Status: {{ application.status }}</span>
+  </p>
+
+  <section class="jd card" *ngIf="hasJobDescription">
+    <h3 class="card-title">Job Description</h3>
+    <div class="jd-body" [innerHTML]="application?.jobDescription"></div>
+  </section>
 
   <div *ngIf="loading">Loading...</div>
 
-  <div *ngIf="!loading && !profile" class="empty-state text-center text-muted no-print">
+  <div *ngIf="!loading && !profile" class="empty-state text-center text-muted">
     <p>No profile found. Please create your profile first.</p>
   </div>
 
   <div class="cv-sheet" *ngIf="!loading && profile">
-    <app-resume-pages [profile]="profile"></app-resume-pages>
+    <app-cv-plain [profile]="profile"></app-cv-plain>
   </div>
 </div>

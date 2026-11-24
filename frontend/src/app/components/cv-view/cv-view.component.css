@@ -1,5 +1,7 @@
-.cv-view-container { padding: 2rem 1.5rem; min-height: calc(100vh - var(--navbar-h)); animation: fadeUp .35s ease both; }
-.cv-toolbar { margin-bottom: 1.5rem; padding: .85rem 1.25rem; }
-.cv-toolbar .card-title { padding: 0; border: 0; }
-.empty-state { padding: 3rem; }
-.cv-sheet { max-width: 900px; margin: 0 auto; }
+.cv-meta { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; margin: 0 auto 1rem; max-width: 900px; font-size: var(--fs-sm); }
+
+.jd { max-width: 900px; margin: 0 auto 1.25rem; padding: 1.1rem 1.4rem; }
+.jd .card-title { margin: 0 0 .5rem; }
+.jd-body { line-height: 1.55; font-size: .93rem; }
+.jd-body ::ng-deep p { margin: 0 0 .5rem; }
+.jd-body ::ng-deep ul, .jd-body ::ng-deep ol { margin: .2rem 0 .5rem; padding-left: 1.3rem; }

@@ -11,7 +11,9 @@ export interface Application {
   location: string;
   status: ApplicationStatus;
   notes?: string;
-  /** Snapshot of the CV (template + all customization) used for THIS application only */
+  /** the job posting text, kept so you can read it later (HTML from the rich editor) */
+  jobDescription?: string;
+  /** Snapshot of the CV content used for THIS application only */
   profile?: Profile;
 }
 
@@ -23,5 +25,6 @@ export function emptyApplication(): Application {
     location: '',
     status: 'Applied',
     notes: '',
+    jobDescription: '',
   };
 }

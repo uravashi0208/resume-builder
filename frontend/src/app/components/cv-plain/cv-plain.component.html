@@ -1,0 +1,80 @@
+<article class="cv" *ngIf="profile">
+
+  <header class="cv-head">
+    <img *ngIf="profile.photo" class="cv-photo" [src]="profile.photo" alt="Photo" />
+    <div class="cv-head-text">
+      <h1 class="cv-name">{{ profile.fullName }}</h1>
+      <p class="cv-title" *ngIf="profile.professionalTitle">{{ profile.professionalTitle }}</p>
+      <p class="cv-contact" *ngIf="contact.length">
+        <span *ngFor="let c of contact">{{ c }}</span>
+      </p>
+      <p class="cv-links" *ngIf="links.length">
+        <a *ngFor="let l of links" [href]="l.url" target="_blank" rel="noopener noreferrer">{{ l.label }}</a>
+      </p>
+    </div>
+  </header>
+
+  <section class="cv-sec" *ngIf="hasText(profile.aboutMe)">
+    <h2>About Me</h2>
+    <div class="rich" [innerHTML]="profile.aboutMe"></div>
+  </section>
+
+  <section class="cv-sec" *ngIf="experience.length">
+    <h2>Experience</h2>
+    <div class="entry" *ngFor="let e of experience">
+      <div class="entry-top">
+        <strong>{{ e.role }}</strong>
+        <span class="entry-date">{{ range(e.startDate, e.endDate, e.present) }}</span>
+      </div>
+      <div class="entry-sub" *ngIf="e.company || e.location">
+        {{ e.company }}<ng-container *ngIf="e.company && e.location"> · </ng-container>{{ e.location }}
+      </div>
+      <div class="rich" *ngIf="hasText(e.description)" [innerHTML]="e.description"></div>
+    </div>
+  </section>
+
+  <section class="cv-sec" *ngIf="education.length">
+    <h2>Education</h2>
+    <div class="entry" *ngFor="let e of education">
+      <div class="entry-top">
+        <strong>{{ e.degree }}</strong>
+        <span class="entry-date">{{ eduRange(e) }}</span>
+      </div>
+      <div class="entry-sub" *ngIf="e.institute || e.location || e.score">
+        {{ e.institute }}<ng-container *ngIf="e.institute && e.location"> · </ng-container>{{ e.location }}<ng-container *ngIf="e.score"> · {{ e.score }}</ng-container>
+      </div>
+      <div class="rich" *ngIf="hasText(e.description)" [innerHTML]="e.description"></div>
+    </div>
+  </section>
+
+  <section class="cv-sec" *ngIf="skills.length">
+    <h2>Technical Skills</h2>
+    <p class="skill-row" *ngFor="let g of skills"><strong *ngIf="g.category">{{ g.category }}:</strong> {{ g.items }}</p>
+  </section>
+
+  <section class="cv-sec" *ngIf="clean(profile.coreCompetencies).length">
+    <h2>Core Competencies</h2>
+    <ul class="plain-list"><li *ngFor="let c of clean(profile.coreCompetencies)">{{ c }}</li></ul>
+  </section>
+
+  <section class="cv-sec" *ngIf="clean(profile.certificates).length">
+    <h2>Certificates</h2>
+    <ul class="plain-list"><li *ngFor="let c of clean(profile.certificates)">{{ c }}</li></ul>
+  </section>
+
+  <section class="cv-sec" *ngIf="languages.length">
+    <h2>Languages</h2>
+    <ul class="plain-list">
+      <li *ngFor="let l of languages">{{ l.name }}<span class="lvl" *ngIf="+l.level > 0"> ({{ l.level }}/5)</span></li>
+    </ul>
+  </section>
+
+  <section class="cv-sec" *ngIf="clean(profile.interests).length">
+    <h2>Interests</h2>
+    <ul class="plain-list"><li *ngFor="let c of clean(profile.interests)">{{ c }}</li></ul>
+  </section>
+
+  <footer class="cv-gdpr" *ngIf="hasText(profile.gdprConsent)">
+    <div class="rich" [innerHTML]="profile.gdprConsent"></div>
+  </footer>
+</article>

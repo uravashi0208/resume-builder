@@ -37,7 +37,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  createNew() {
-    this.router.navigate(['/template-select']);
+  edit() {
+    this.router.navigate(['/profile-form']);
   }
 }

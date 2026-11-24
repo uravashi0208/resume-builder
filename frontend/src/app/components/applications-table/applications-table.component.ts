@@ -101,7 +101,7 @@ export class ApplicationsTableComponent implements OnInit {
 
   // ---------- Navigation ----------
   addApplication() {
-    this.router.navigate(['/applications/select-template']);
+    this.router.navigate(['/applications/new']);
   }
 
   editApplication(app: Application) {
@@ -119,11 +119,7 @@ export class ApplicationsTableComponent implements OnInit {
 
   // ---------- Actions ----------
   viewCv(app: Application) {
-    window.open(`/cv-view/${app.id}`, '_blank');
-  }
-
-  downloadPdf(app: Application) {
-    window.open(`/cv-view/${app.id}?download=true`, '_blank');
+    this.router.navigate(['/cv-view', app.id]);
   }
 
   /** summary tiles above the table */

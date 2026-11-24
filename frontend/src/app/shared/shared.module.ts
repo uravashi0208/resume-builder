@@ -13,12 +13,8 @@ import { RadioGroupComponent }    from './components/radio-group/radio-group.com
 import { SelectFieldComponent }   from './components/select-field/select-field.component';
 import { DatePickerComponent }    from './components/date-picker/date-picker.component';
 import { RichEditorComponent } from './components/rich-editor/rich-editor.component';
-import { SectionIconComponent } from './components/section-icon/section-icon.component';
-import { StepSliderComponent } from './components/step-slider/step-slider.component';
-import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { SideNavComponent } from './components/side-nav/side-nav.component';
 import { AuthLayoutComponent } from './components/auth-layout/auth-layout.component';
-import { SortableListComponent } from './components/sortable-list/sortable-list.component';
 
 const SHARED_COMPONENTS = [
   InputFieldComponent,
@@ -28,11 +24,7 @@ const SHARED_COMPONENTS = [
   SelectFieldComponent,
   DatePickerComponent,
   RichEditorComponent,
-  SectionIconComponent,
-  StepSliderComponent,
-  DropdownComponent,
   SideNavComponent,
-  SortableListComponent,
   AuthLayoutComponent,
 ];
 

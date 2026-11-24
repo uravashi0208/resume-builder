@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 export interface NavItem { key: string; label: string; }
 
 /**
- * Left sidebar used by BOTH editor tabs (Content + Customize).
+ * Left sidebar used by the application editor (section list).
  * Key-based: parent passes `items` + the `active` key and reacts to `(select)`.
  * Look comes from global `.side-nav` / `.nav-item` in styles.css.
  */

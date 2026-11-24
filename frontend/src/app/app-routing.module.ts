@@ -4,7 +4,6 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { LoginComponent }             from './components/login/login.component';
 import { RegisterComponent }          from './components/register/register.component';
-import { TemplateSelectComponent }    from './components/template-select/template-select.component';
 import { ProfileFormComponent }       from './components/profile-form/profile-form.component';
 import { DashboardComponent }         from './components/dashboard/dashboard.component';
 import { ApplicationsTableComponent } from './components/applications-table/applications-table.component';
@@ -17,10 +16,8 @@ const routes: Routes = [
   { path: 'login',                    component: LoginComponent },
   { path: 'register',                 component: RegisterComponent },
   { path: 'dashboard',                component: DashboardComponent,          canActivate: [AuthGuard] },
-  { path: 'template-select',          component: TemplateSelectComponent,     canActivate: [AuthGuard] },
   { path: 'profile-form',             component: ProfileFormComponent,        canActivate: [AuthGuard] },
   { path: 'applications',             component: ApplicationsTableComponent,  canActivate: [AuthGuard] },
-  { path: 'applications/select-template', component: TemplateSelectComponent, data: { target: 'application' }, canActivate: [AuthGuard] },
   { path: 'applications/new',         component: ApplicationEditorComponent,  canActivate: [AuthGuard] },
   { path: 'applications/edit/:id',    component: ApplicationEditorComponent,  canActivate: [AuthGuard] },
   { path: 'cv-view',                  component: CvViewComponent,             canActivate: [AuthGuard] },

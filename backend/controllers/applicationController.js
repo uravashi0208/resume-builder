@@ -1,12 +1,11 @@
 // backend/controllers/applicationController.js
 // Firestore collection: "applications"
-// Doc fields: { uid, companyName, appliedTitle, applyDate, location, status, notes,
-//               template, profile, createdAt, updatedAt }
+// Doc fields: { uid, companyName, appliedTitle, applyDate, location, status, notes, jobDescription,
+//               profile, createdAt, updatedAt }
 // status: "Applied" | "Accepted" | "Rejected"
 //
-// `profile` = the CV snapshot (template + all customization + content) of THIS application only.
-// Every application keeps its own CV, so choosing a different template for one application
-// never changes another application.
+// `profile` = the CV content snapshot of THIS application only.
+// Every application keeps its own CV, so editing one application never changes another.
 
 const { db, admin } = require("../config/firebaseAdmin");
 
@@ -19,7 +18,6 @@ const MAX_PROFILE_BYTES = 900 * 1024;
  * Validate + clean the body. Returns { error } or { data }.
  * - profile must be a plain object and small enough for Firestore
  * - fields that must never come from the client (id, uid, timestamps) are removed
- * - top-level `template` is mirrored from profile.template for quick access/filtering
  */
 const sanitizeBody = (body) => {
   const data = { ...body };
@@ -27,6 +25,15 @@ const sanitizeBody = (body) => {
   delete data.uid;
   delete data.createdAt;
   delete data.updatedAt;
+
+  if (data.jobDescription !== undefined) {
+    if (typeof data.jobDescription !== "string") {
+      return { error: "jobDescription must be a string." };
+    }
+    if (data.jobDescription.length > 100000) {
+      return { error: "Job description is too long (max 100,000 characters)." };
+    }
+  }
 
   if (data.profile !== undefined) {
     const p = data.profile;
@@ -39,10 +46,9 @@ const sanitizeBody = (body) => {
     delete profile.updatedAt;
 
     if (Buffer.byteLength(JSON.stringify(profile), "utf8") > MAX_PROFILE_BYTES) {
-      return { error: "CV data is too large. Please use smaller images (photo / background)." , tooLarge: true };
+      return { error: "CV data is too large. Please use a smaller photo." , tooLarge: true };
     }
     data.profile = profile;
-    if (typeof profile.template === "string") data.template = profile.template;
   }
   return { data };
 };
@@ -76,9 +82,9 @@ exports.getMyApplications = async (req, res) => {
     const uid = req.user.uid;
     const snapshot = await db.collection(COLLECTION).where("uid", "==", uid).get();
 
-    // The list/table does not need the heavy CV snapshot -> leave `profile` out (fetched by id when needed)
+    // The list/table does not need the heavy CV snapshot / job description -> leave them out (fetched by id when needed)
     const applications = snapshot.docs.map((doc) => {
-      const { profile, ...rest } = doc.data();
+      const { profile, jobDescription, ...rest } = doc.data();
       return { id: doc.id, ...rest };
     });
     // Newest first (client already has all data; sort by applyDate desc)

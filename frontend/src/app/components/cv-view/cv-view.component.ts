@@ -1,11 +1,13 @@
 // src/app/components/cv-view/cv-view.component.ts
-// "View CV" ane "Download PDF" (browser print) action mate vaprai che
+// Read-only view of the CV saved with one application (or the shared profile). No download / print.
 
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApplicationService } from '../../services/application.service';
 import { ProfileService } from '../../services/profile.service';
+import { Application } from '../../models/application.model';
 import { Profile } from '../../models/profile.model';
+import { stripTags } from '../../shared/utils/text';
 
 @Component({
   selector: 'app-cv-view',
@@ -14,20 +16,24 @@ import { Profile } from '../../models/profile.model';
 })
 export class CvViewComponent implements OnInit {
   profile: Profile | null = null;
+  application: Application | null = null;
   loading = true;
 
   constructor(
     private profileService: ProfileService,
     private applicationService: ApplicationService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     const appId = this.route.snapshot.paramMap.get('id');
     if (appId) {
-      // CV of one specific application (its own template)
       this.applicationService.getApplicationById(appId).subscribe({
-        next: (app) => app.profile ? this.show(app.profile) : this.loadSharedProfile(),
+        next: (app) => {
+          this.application = app;
+          app.profile ? this.show(app.profile) : this.loadSharedProfile();
+        },
         error: () => this.loadSharedProfile(),
       });
     } else {
@@ -45,17 +51,13 @@ export class CvViewComponent implements OnInit {
   private show(p: Profile) {
     this.profile = p;
     this.loading = false;
-
-    // ?download=true hoy to automatic print dialog khulse (Save as PDF)
-    if (this.route.snapshot.queryParamMap.get('download') === 'true') {
-      // wait for fonts + the paginator to lay the pages out before the print dialog opens
-      const go = () => setTimeout(() => window.print(), 700);
-      const fonts = (document as any).fonts;
-      fonts?.ready ? fonts.ready.then(go) : go();
-    }
   }
 
-  printCv() {
-    window.print();
+  get hasJobDescription(): boolean {
+    return !!stripTags(this.application?.jobDescription);
+  }
+
+  back() {
+    this.router.navigate([this.application ? '/applications' : '/dashboard']);
   }
 }

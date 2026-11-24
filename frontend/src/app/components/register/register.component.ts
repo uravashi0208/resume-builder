@@ -43,7 +43,7 @@ export class RegisterComponent {
 
     this.authService
       .register(email, password)
-      .then(() => this.router.navigate(['/template-select']))
+      .then(() => this.router.navigate(['/profile-form']))
       .catch((err) => (this.errorMsg = authErrorMessage(err)))
       .finally(() => (this.loading = false));
   }

@@ -66,14 +66,14 @@ export class AppModule {}
 ### `<app-radio-group>`
 ```html
 <app-radio-group
-  label="Template"
+  label="Job type"
   layout="horizontal"   <!-- vertical (default) | horizontal -->
   [options]="[
-    { value: 'template-one', label: 'Classic' },
-    { value: 'template-two', label: 'Modern' },
-    { value: 'template-three', label: 'Elegant' }
+    { value: 'full', label: 'Full time' },
+    { value: 'part', label: 'Part time' },
+    { value: 'intern', label: 'Internship' }
   ]"
-  formControlName="template">
+  formControlName="jobType">
 </app-radio-group>
 ```
 
@@ -145,6 +145,6 @@ Component CSS files should only hold layout that is unique to that component.
 | Tabs / side nav | `tabs` (children get `.active`), `nav-item` |
 | Form control | `field` `field-label` `field-input|textarea|select` `is-invalid` `field-hint` `field-error` |
 | Check / radio / switch | `check` + `check-box` (`round`, `sm`), `switch` |
-| Option buttons (Customize) | `opt` + `opt-tile` / `opt-sq` / `opt-sm`, group them with `opt-group` |
+| Option buttons | `opt` + `opt-tile` / `opt-sq` / `opt-sm`, group them with `opt-group` |
 | Page shell | `page` (width via `style="--page-w:1100px"`), `page-head`, `page-title`, `panel-title`, `card-title` |
 | Status / messages | `badge applied|accepted|rejected`, `msg-error`, `msg-success` |

@@ -1,10 +1,9 @@
 // src/app/components/profile-form/profile-form.component.ts
-// AA COMMON/REUSABLE COMPONENT CHE - koi pan template mate same form use thay
 // PDF resume na badha fields ahiya reactive form ma che (dynamic FormArrays sathe)
 
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
 import { Profile, DEFAULT_GDPR_CONSENT } from '../../models/profile.model';
 
@@ -18,17 +17,14 @@ export class ProfileFormComponent implements OnInit {
   saving = false;
   successMsg = '';
   errorMsg = '';
-  selectedTemplate = 'template-one';
 
   constructor(
     private fb: FormBuilder,
     private profileService: ProfileService,
-    private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.selectedTemplate = this.route.snapshot.queryParamMap.get('template') || 'template-one';
     this.buildForm();
     this.loadExistingProfile();
   }
@@ -42,7 +38,6 @@ export class ProfileFormComponent implements OnInit {
       location: [''],
       aboutMe: [''],
       gdprConsent: [DEFAULT_GDPR_CONSENT],
-      template: [this.selectedTemplate, Validators.required],
 
       education: this.fb.array([this.createEducationGroup()]),
       coreCompetencies: this.fb.array([this.fb.control('')]),
@@ -78,7 +73,6 @@ export class ProfileFormComponent implements OnInit {
       location: profile.location,
       aboutMe: profile.aboutMe,
       gdprConsent: profile.gdprConsent ?? DEFAULT_GDPR_CONSENT,
-      template: profile.template || this.selectedTemplate,
       socialLinks: profile.socialLinks,
     });
 

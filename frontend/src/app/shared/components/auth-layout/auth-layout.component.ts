@@ -13,8 +13,8 @@ export class AuthLayoutComponent {
   @Input() heroAccent = '';
   @Input() heroSub    = '';
   readonly points = [
-    'ATS-friendly templates recruiters can parse',
-    'A4 & Letter pages with a clean automatic split',
-    'Write in 25 languages, export a crisp PDF',
+    'Keep your CV content safely stored online',
+    'One CV saved with every job application',
+    'Open and read it any time, from any device',
   ];
 }

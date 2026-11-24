@@ -241,7 +241,7 @@ input, textarea, select { font-family: inherit; }
 .btn-icon.sm { --size: 30px; border-radius: var(--r-sm); }
 
 /* ═══════════════════════════════════════════════════════════════
-   4. SEGMENTED TABS  (navbar links + editor Content/Customize)
+   4. SEGMENTED TABS  (navbar links)
    ═══════════════════════════════════════════════════════════════ */
 .tabs { display: flex; gap: 4px; padding: 4px; }
 .tabs > * {
@@ -252,7 +252,7 @@ input, textarea, select { font-family: inherit; }
 .tabs > *:hover  { color: var(--brand-dark); }
 .tabs > .active  { background: var(--bg-card); color: var(--brand-dark); box-shadow: 0 2px 8px -2px rgba(54,38,167,.56); }
 
-/* vertical list nav (editor sections sidebar, customize rail) */
+/* vertical list nav (editor sections sidebar) */
 .nav-item {
   display: block; width: 100%; background: none; border: none; text-align: left; white-space: nowrap;
   padding: .5rem .85rem; border-radius: var(--r-sm); font-size: var(--fs-sm); color: var(--text-muted);
@@ -324,7 +324,7 @@ input, textarea, select { font-family: inherit; }
 .switch.on::after { left: 19px; }
 
 /* ═══════════════════════════════════════════════════════════════
-   6. OPTION BUTTONS  (Customize tab: pills, tiles, A/B/I, chips)
+   6. OPTION BUTTONS  (pills, tiles, chips)
    One component, three modifiers → every option control looks alike
    ═══════════════════════════════════════════════════════════════ */
 .opt {
@@ -373,15 +373,6 @@ input, textarea, select { font-family: inherit; }
 /* ── Animations ─────────────────────────────────────────────── */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes float  { 0%,100% { translate: 0 0; } 50% { translate: 0 -12px; } }
-
-/* ── Print ──────────────────────────────────────────────────── */
-@media print {
-  app-navbar, .no-print { display: none !important; }
-  html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
-  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .cv-view-container { padding: 0 !important; background: none !important; min-height: 0 !important; animation: none !important; }
-  .cv-sheet { max-width: none !important; margin: 0 !important; }
-}
 
 /* ── helpers added during consistency pass ───────────────────── */
 .text-nowrap { white-space: nowrap; }

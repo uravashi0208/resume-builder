@@ -9,7 +9,6 @@
 //   location: string,
 //   aboutMe: string,
 //   gdprConsent: string,   // consent text shown at bottom of every CV (editable; "" = hidden)
-//   template: "template-one" | "template-two",
 //   education: [{ degree, institute, duration, score }],
 //   coreCompetencies: [string],
 //   technicalSkills: [{ category, items: [string] }],

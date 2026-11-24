@@ -2,3 +2,4 @@ backend/be.tar
 .env
 .env.*
 !.env.example
+config/serviceAccountKey.json
