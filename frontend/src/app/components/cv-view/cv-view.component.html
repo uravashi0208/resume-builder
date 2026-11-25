@@ -1,30 +1,36 @@
-<div class="cv-view-container">
-  <div class="cv-toolbar card d-flex align-center justify-between">
-    <h2 class="card-title">
-      <ng-container *ngIf="application; else plainTitle">{{ application.companyName }} — {{ application.appliedTitle }}</ng-container>
-      <ng-template #plainTitle>My CV</ng-template>
-    </h2>
-    <button class="btn-secondary" (click)="back()">← Back</button>
-  </div>
+<div class="page-shell" style="--page-w:1180px">
 
-  <p class="cv-meta text-muted" *ngIf="application">
-    <span *ngIf="application.applyDate">Applied: {{ application.applyDate }}</span>
-    <span *ngIf="application.location">{{ application.location }}</span>
-    <span>Status: {{ application.status }}</span>
-  </p>
+  <app-page-header
+    [eyebrow]="application ? 'Application' : 'Overview'"
+    [title]="application ? application.companyName : 'My'"
+    [accent]="application ? '' : 'CV'"
+    [subtitle]="application?.appliedTitle || ''">
 
-  <section class="jd card" *ngIf="hasJobDescription">
-    <h3 class="card-title">Job Description</h3>
-    <div class="jd-body" [innerHTML]="application?.jobDescription"></div>
-  </section>
+    <div meta class="chips" *ngIf="application">
+      <span class="chip" *ngIf="application.applyDate"><app-icon name="calendar" [size]="14"></app-icon>{{ application.applyDate }}</span>
+      <span class="chip" *ngIf="application.location"><app-icon name="pin" [size]="14"></app-icon>{{ application.location }}</span>
+      <app-status-badge [status]="application.status"></app-status-badge>
+    </div>
 
-  <div *ngIf="loading">Loading...</div>
+    <button class="btn-secondary" (click)="back()"><app-icon name="back" [size]="14"></app-icon> Back</button>
+  </app-page-header>
 
-  <div *ngIf="!loading && !profile" class="empty-state text-center text-muted">
-    <p>No profile found. Please create your profile first.</p>
-  </div>
+  <app-segmented-tabs *ngIf="hasJobDescription" class="switcher" [options]="tabs" [value]="view" (valueChange)="setView($event)"></app-segmented-tabs>
 
-  <div class="cv-sheet" *ngIf="!loading && profile">
-    <app-cv-plain [profile]="profile"></app-cv-plain>
+  <app-state *ngIf="loading" [loading]="true"></app-state>
+  <app-state *ngIf="!loading && !profile" message="No profile found. Please create your profile first."></app-state>
+
+  <div class="content" *ngIf="!loading" [class.two-col]="view === 'both' && hasJobDescription">
+
+    <section class="pane" *ngIf="hasJobDescription && (view === 'jd' || view === 'both')">
+      <div class="jd-card card">
+        <h3 class="card-title">Job Description</h3>
+        <div class="jd-body" [innerHTML]="application?.jobDescription"></div>
+      </div>
+    </section>
+
+    <section class="pane" *ngIf="profile && (view === 'cv' || view === 'both' || !hasJobDescription)">
+      <app-cv-plain [profile]="profile"></app-cv-plain>
+    </section>
   </div>
 </div>

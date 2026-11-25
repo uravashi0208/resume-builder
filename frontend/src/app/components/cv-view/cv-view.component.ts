@@ -1,5 +1,5 @@
 // src/app/components/cv-view/cv-view.component.ts
-// Read-only view of the CV saved with one application (or the shared profile). No download / print.
+// Read-only page for one application: header, CV / Job description (tabs or side by side). No download / print.
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,7 +7,10 @@ import { ApplicationService } from '../../services/application.service';
 import { ProfileService } from '../../services/profile.service';
 import { Application } from '../../models/application.model';
 import { Profile } from '../../models/profile.model';
+import { TabOption } from '../../shared/components/segmented-tabs/segmented-tabs.component';
 import { stripTags } from '../../shared/utils/text';
+
+type View = 'cv' | 'jd' | 'both';
 
 @Component({
   selector: 'app-cv-view',
@@ -15,9 +18,17 @@ import { stripTags } from '../../shared/utils/text';
   styleUrls: ['./cv-view.component.css'],
 })
 export class CvViewComponent implements OnInit {
+  readonly tabs: TabOption[] = [
+    { value: 'cv',   label: 'CV' },
+    { value: 'jd',   label: 'Job Description' },
+    { value: 'both', label: 'Side by side', wideOnly: true },
+  ];
+
   profile: Profile | null = null;
   application: Application | null = null;
+  hasJobDescription = false;
   loading = true;
+  view: View = 'cv';
 
   constructor(
     private profileService: ProfileService,
@@ -28,23 +39,22 @@ export class CvViewComponent implements OnInit {
 
   ngOnInit(): void {
     const appId = this.route.snapshot.paramMap.get('id');
-    if (appId) {
-      this.applicationService.getApplicationById(appId).subscribe({
-        next: (app) => {
-          this.application = app;
-          app.profile ? this.show(app.profile) : this.loadSharedProfile();
-        },
-        error: () => this.loadSharedProfile(),
-      });
-    } else {
-      this.loadSharedProfile();
-    }
+    if (!appId) return this.loadSharedProfile();
+
+    this.applicationService.getApplicationById(appId).subscribe({
+      next: (app) => {
+        this.application = app;
+        this.hasJobDescription = !!stripTags(app.jobDescription);
+        app.profile ? this.show(app.profile) : this.loadSharedProfile();
+      },
+      error: () => this.loadSharedProfile(),
+    });
   }
 
   private loadSharedProfile() {
     this.profileService.getMyProfile().subscribe({
       next: (p) => this.show(p),
-      error: () => { this.loading = false; },
+      error: () => (this.loading = false),
     });
   }
 
@@ -53,8 +63,8 @@ export class CvViewComponent implements OnInit {
     this.loading = false;
   }
 
-  get hasJobDescription(): boolean {
-    return !!stripTags(this.application?.jobDescription);
+  setView(v: string) {
+    this.view = v as View;
   }
 
   back() {

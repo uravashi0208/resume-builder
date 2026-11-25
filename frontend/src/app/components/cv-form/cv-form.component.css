@@ -1,0 +1,19 @@
+/* Only what is specific to the CV form. Cards, fields, buttons come from the shared components + global design system. */
+
+.block-fields { display: flex; flex-direction: column; gap: .85rem; }
+
+/* language row: [name .......] [level] */
+.lang-row { display: flex; align-items: center; gap: .6rem; }
+.lang-row app-input-field  { flex: 1; min-width: 0; }
+.lang-row app-select-field { flex: none; width: 150px; }
+
+/* photo upload (Basic Info) */
+.photo-field { margin-bottom: .25rem; }
+.photo-preview { flex: none; width: 72px; height: 72px; overflow: hidden; font-size: var(--fs-2xs); color: var(--text-muted); background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 50%; }
+.photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+.photo-actions small { flex-basis: 100%; font-size: var(--fs-xs); color: var(--text-muted); }
+.photo-upload { cursor: pointer; }
+
+@media (max-width: 560px) {
+  .cv-form .grid-2 { grid-template-columns: 1fr; }
+}

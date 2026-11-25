@@ -1,5 +1,6 @@
 // src/app/shared/shared.module.ts
-// Import this module in AppModule (or any feature module) to get all common form controls.
+// Import this module in AppModule (or any feature module) to get all common UI pieces:
+// form controls, icons, brand, page header, status badge, loading/empty state, tabs, form sections, array fields, auth card.
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -15,6 +16,15 @@ import { DatePickerComponent }    from './components/date-picker/date-picker.com
 import { RichEditorComponent } from './components/rich-editor/rich-editor.component';
 import { SideNavComponent } from './components/side-nav/side-nav.component';
 import { AuthLayoutComponent } from './components/auth-layout/auth-layout.component';
+import { AuthCardComponent } from './components/auth-card/auth-card.component';
+import { IconComponent } from './components/icon/icon.component';
+import { BrandComponent } from './components/brand/brand.component';
+import { PageHeaderComponent } from './components/page-header/page-header.component';
+import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
+import { StateComponent } from './components/state/state.component';
+import { SegmentedTabsComponent } from './components/segmented-tabs/segmented-tabs.component';
+import { FormSectionComponent } from './components/form-section/form-section.component';
+import { ArrayFieldComponent } from './components/array-field/array-field.component';
 
 const SHARED_COMPONENTS = [
   InputFieldComponent,
@@ -26,6 +36,15 @@ const SHARED_COMPONENTS = [
   RichEditorComponent,
   SideNavComponent,
   AuthLayoutComponent,
+  AuthCardComponent,
+  IconComponent,
+  BrandComponent,
+  PageHeaderComponent,
+  StatusBadgeComponent,
+  StateComponent,
+  SegmentedTabsComponent,
+  FormSectionComponent,
+  ArrayFieldComponent,
 ];
 
 @NgModule({

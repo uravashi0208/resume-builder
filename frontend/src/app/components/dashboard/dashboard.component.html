@@ -1,15 +1,13 @@
 <div class="page-shell" style="--page-w:1100px">
-  <header class="page-head">
-    <div><p class="eyebrow">Overview</p><h2 class="display page-title">My <em class="grad-text">dashboard</em></h2></div>
+  <app-page-header eyebrow="Overview" title="My" accent="dashboard">
     <button class="btn-primary" *ngIf="profile" (click)="edit()">Edit Profile</button>
-  </header>
+  </app-page-header>
 
-  <div *ngIf="loading">Loading...</div>
+  <app-state *ngIf="loading" [loading]="true"></app-state>
 
-  <div *ngIf="!loading && notFound" class="empty-state glass card-round text-center">
-    <p>You haven't created a profile yet.</p>
+  <app-state *ngIf="!loading && notFound" [card]="true" message="You haven't created a profile yet.">
     <button class="btn-primary" (click)="edit()">Create Profile</button>
-  </div>
+  </app-state>
 
-  <app-cv-plain *ngIf="!loading && profile" [profile]="profile"></app-cv-plain>
+  <app-cv-plain *ngIf="profile" [profile]="profile"></app-cv-plain>
 </div>

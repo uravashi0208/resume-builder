@@ -175,14 +175,6 @@ input, textarea, select { font-family: inherit; }
 }
 .card-round { border-radius: var(--r-sm); }
 .page-shell { max-width: var(--page-w, 1200px); margin: 0 auto; padding: 2rem 1.5rem; animation: fadeUp .35s ease both; }
-.page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
-.logo-mark {
-  color: var(--brand);
-  --size: 38px;
-  width: var(--size); height: var(--size); border-radius: calc(var(--size) / 3.2); display: grid; place-items: center;
-  background: var(--grad-brand); box-shadow: 0 8px 20px -6px var(--brand-glow);
-  transition: transform var(--t-med);
-}
 
 /* ═══════════════════════════════════════════════════════════════
    3. BUTTONS
@@ -261,8 +253,8 @@ input, textarea, select { font-family: inherit; }
 .nav-item:hover  { background: var(--bg-subtle); color: var(--text-primary); transform: translateX(2px); }
 .nav-item.active { background: var(--grad-brand-soft); color: var(--brand-dark); font-weight: 700; box-shadow: inset 3px 0 0 var(--brand); }
 
-/* sidebar container (used by <app-side-nav> in both editor tabs) */
-.side-nav { width: 264px; flex-shrink: 0; gap: 2px; margin: 1rem 0 1rem 1.25rem; padding: .7rem .55rem; border-radius: var(--r-md); overflow-y: auto; min-height: 0; }
+/* section list box (<app-side-nav>); the page decides where it sits */
+.side-nav { width: 100%; gap: 2px; padding: .6rem; border-radius: var(--r-md); }
 
 /* ═══════════════════════════════════════════════════════════════
    5. FORM FIELDS
@@ -347,24 +339,12 @@ input, textarea, select { font-family: inherit; }
 .opt-group > .opt + .opt { border-left: 1px solid var(--border-strong); }
 
 /* ═══════════════════════════════════════════════════════════════
-   7. BLOCKS, BADGES, MESSAGES
+   7. MESSAGES, CHIPS
    ═══════════════════════════════════════════════════════════════ */
-.dynamic-row { display: flex; align-items: center; gap: .6rem; }
-.block-card {
-  position: relative; display: flex; flex-direction: column; gap: .85rem; margin-bottom: 1rem; padding: 1.1rem;
-  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-xs);
-  transition: border-color var(--t-fast), box-shadow var(--t-fast);
-}
-.block-card:hover { border-color: var(--border-brand); box-shadow: 0 2px 12px var(--brand-glow); }
-.block-card-header { display: flex; align-items: flex-end; gap: .75rem; }
-.block-card-header > *:first-child { flex: 1; }
-.block-remove-corner { position: absolute; top: .5rem; right: .5rem; z-index: 2; }
 
-.badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: var(--r-pill); font-size: var(--fs-sm); font-weight: 700; }
-.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.badge.applied  { background: var(--brand-soft-2); color: var(--brand-dark); }
-.badge.accepted { background: var(--success-bg);   color: var(--success); }
-.badge.rejected { background: var(--pink-soft);    color: var(--pink); }
+
+.chip { display: inline-flex; align-items: center; gap: .4rem; padding: 4px 12px; border-radius: var(--r-pill); font-size: var(--fs-sm); font-weight: 600; color: var(--text-secondary); background: var(--bg-card); border: 1px solid var(--border); }
+.chip app-icon { color: var(--text-muted); }
 
 .msg-error, .msg-success { font-size: var(--fs-sm); padding: .55rem .8rem; border-radius: var(--r-sm); border: 1px solid; }
 .msg-error   { color: var(--danger);  background: var(--danger-bg);  border-color: var(--danger-border); }
@@ -376,8 +356,6 @@ input, textarea, select { font-family: inherit; }
 
 /* ── helpers added during consistency pass ───────────────────── */
 .text-nowrap { white-space: nowrap; }
-.btn-icon.block-remove-corner { --size: 26px; }
-.panel-title { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 600; letter-spacing: -.01em; color: var(--text-primary); }
 .check input { position: absolute; opacity: 0; pointer-events: none; }
 .check input:checked + .check-box { background: var(--brand); border-color: var(--brand); }
 .check input:checked + .check-box::after { content: ''; width: 5px; height: 10px; border: solid var(--on-brand); border-width: 0 2px 2px 0; transform: rotate(45deg) translate(-1px, -1px); }

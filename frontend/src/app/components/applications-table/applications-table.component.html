@@ -1,8 +1,7 @@
 <div class="page-shell">
-  <div class="page-head">
-    <div><p class="eyebrow">Job tracker</p><h2 class="display page-title">My <em class="grad-text">applications</em></h2></div>
+  <app-page-header eyebrow="Job tracker" title="My" accent="applications">
     <button class="btn-primary" (click)="addApplication()"><span class="plus">+</span> Add Application</button>
-  </div>
+  </app-page-header>
 
   <!-- Summary tiles -->
   <div class="stats d-grid" *ngIf="!loading">
@@ -31,7 +30,7 @@
   </div>
 
   <p class="msg-error" *ngIf="errorMsg">{{ errorMsg }}</p>
-  <div *ngIf="loading">Loading...</div>
+  <app-state *ngIf="loading" [loading]="true"></app-state>
 
   <!-- Table -->
   <div class="table-wrapper glass card-round" *ngIf="!loading">
@@ -52,7 +51,7 @@
           <td>{{ app.appliedTitle }}</td>
           <td>{{ app.applyDate }}</td>
           <td>{{ app.location }}</td>
-          <td><span [ngClass]="statusClass(app.status)">{{ app.status }}</span></td>
+          <td><app-status-badge [status]="app.status"></app-status-badge></td>
           <td><div class="d-flex align-center flex-wrap gap-2">
             <button class="btn-ghost btn-sm" (click)="viewCv(app)">View CV</button>
             <button class="btn-ghost btn-sm" (click)="editApplication(app)">Edit</button>

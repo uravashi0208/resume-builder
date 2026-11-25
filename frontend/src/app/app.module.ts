@@ -16,8 +16,10 @@ import { ApplicationsTableComponent }  from './components/applications-table/app
 import { ApplicationEditorComponent }  from './components/application-editor/application-editor.component';
 import { CvViewComponent }             from './components/cv-view/cv-view.component';
 import { CvPlainComponent }            from './components/cv-plain/cv-plain.component';
+import { CvSectionComponent }          from './components/cv-plain/cv-section.component';
+import { CvFormComponent }             from './components/cv-form/cv-form.component';
 
-// ── Shared UI module (InputField, Textarea, Checkbox, Radio, Select, DatePicker, RichEditor, SideNav)
+// ── Shared UI module (form controls, icon, brand, page header, status badge, state, tabs, form section, array field, auth card)
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
@@ -32,6 +34,8 @@ import { SharedModule } from './shared/shared.module';
     ApplicationEditorComponent,
     CvViewComponent,
     CvPlainComponent,
+    CvSectionComponent,
+    CvFormComponent,
   ],
   imports: [
     BrowserModule,

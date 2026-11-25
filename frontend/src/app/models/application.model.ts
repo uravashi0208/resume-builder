@@ -1,7 +1,9 @@
 // src/app/models/application.model.ts
 import { Profile } from './profile.model';
 
-export type ApplicationStatus = 'Applied' | 'Accepted' | 'Rejected';
+/** single source of truth for the status values (table filter, editor dropdown, stats, badge) */
+export const APPLICATION_STATUSES = ['Applied', 'Accepted', 'Rejected'] as const;
+export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
 export interface Application {
   id?: string;

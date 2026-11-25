@@ -1,0 +1,38 @@
+:host { display: flex; flex-direction: column; gap: .9rem; }
+
+.items { display: flex; flex-direction: column; gap: 1rem; }
+.items.rows { gap: .6rem; }
+
+/* the projected fields of one row (a wrapper of OUR template, so this style really applies to them) */
+.cell { min-width: 0; }
+
+/* a row = one slim line: [⋮⋮] [input ............] [▲▼] ✕ */
+.row { display: flex; align-items: center; gap: .5rem; }
+.row > .cell { flex: 1; }
+
+/* a block = a card holding several fields; ✕ sits in the corner */
+.block-card {
+  position: relative; padding: 1.1rem;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-xs);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), opacity var(--t-fast);
+}
+.block-card:hover { border-color: var(--border-brand); box-shadow: 0 2px 12px var(--brand-glow); }
+.block-remove-corner { --size: 26px; position: absolute; top: .5rem; right: .5rem; z-index: 2; }
+
+/* re-order: handle, ▲ ▼, drop line */
+.block-bar { display: flex; align-items: center; gap: .35rem; margin: -.3rem 2.2rem .8rem -.35rem; padding-bottom: .6rem; border-bottom: 1px dashed var(--border); }
+.block-title { flex: 1; font-size: var(--fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+
+.handle { display: inline-flex; flex: none; padding: .25rem; border-radius: var(--r-sm); color: var(--text-muted); cursor: grab; user-select: none; transition: color var(--t-fast), background var(--t-fast); }
+.handle:hover { color: var(--brand); background: var(--brand-soft); }
+.handle:active { cursor: grabbing; }
+
+.move { display: inline-flex; padding: .25rem; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--text-muted); transition: color var(--t-fast), background var(--t-fast); }
+.move:hover:not(:disabled) { color: var(--brand); background: var(--brand-soft); }
+.move:disabled { opacity: .3; cursor: default; }
+
+.dragging { opacity: .45; }
+.block-card.drop-before { box-shadow: 0 -3px 0 0 var(--brand), var(--shadow-xs); }
+.block-card.drop-after  { box-shadow: 0 3px 0 0 var(--brand), var(--shadow-xs); }
+.row.drop-before { box-shadow: 0 -3px 0 0 var(--brand); }
+.row.drop-after  { box-shadow: 0 3px 0 0 var(--brand); }

@@ -148,3 +148,25 @@ Component CSS files should only hold layout that is unique to that component.
 | Option buttons | `opt` + `opt-tile` / `opt-sq` / `opt-sm`, group them with `opt-group` |
 | Page shell | `page` (width via `style="--page-w:1100px"`), `page-head`, `page-title`, `panel-title`, `card-title` |
 | Status / messages | `badge applied|accepted|rejected`, `msg-error`, `msg-success` |
+
+---
+
+## Layout / UI building blocks (added in the clean-up)
+
+Write once, use everywhere. All are declared in `SharedModule`.
+
+| Component | What it replaces |
+|---|---|
+| `<app-icon name="back" [size]="18">` | every inline `<svg>` (logo, back, close, arrow, logout, check, calendar, pin, eye) |
+| `<app-brand link="/dashboard" [size]="32">` | logo + "ResumeBuilder" text (navbar, login/register hero) |
+| `<app-page-header eyebrow title accent>` + `[meta]` slot | the `.page-head` markup of every page |
+| `<app-status-badge [status]>` | Applied / Accepted / Rejected pill (table, CV page) |
+| `<app-state [loading]` / `message>` | "Loading…" and empty states |
+| `<app-segmented-tabs [options] [(value)]>` | CV / Job description / Side by side switcher |
+| `<app-form-section title [card]>` | a titled form block (card on stacked pages, panel in the editor) |
+| `<app-array-field [array] [create] addLabel>` | every "list of rows + ✕ + + Add" (education, experience, skills, languages, competencies…) |
+| `<app-auth-card …>` | the card shared by Login and Register |
+
+The CV form itself lives in **one** place: `components/cv-form` (`<app-cv-form [form] section>`) with
+`services/cv-form.service.ts` (`build()` / `patch()`), used by both the Profile page and the Application editor.
+Section list + language levels: `models/cv-sections.ts`. Status values: `APPLICATION_STATUSES` in `models/application.model.ts`.

@@ -1,0 +1,127 @@
+<div [formGroup]="form" class="cv-form">
+
+  <app-form-section *ngFor="let s of visible" [title]="s.label" [ngSwitch]="s.key">
+
+    <!-- Basic info -->
+    <ng-container *ngSwitchCase="'basic'">
+      <div class="photo-field d-flex align-center gap-4">
+        <div class="photo-preview d-flex align-center justify-center">
+          <img *ngIf="photo; else noPhoto" [src]="photo" alt="Photo" />
+          <ng-template #noPhoto><span>No photo</span></ng-template>
+        </div>
+        <div class="photo-actions d-flex flex-wrap align-center gap-2">
+          <label class="btn-ghost photo-upload">
+            Upload photo
+            <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
+          </label>
+          <button type="button" class="btn-ghost" *ngIf="photo" (click)="removePhoto()">Remove</button>
+          <small>Shown at the top of your CV.</small>
+        </div>
+      </div>
+      <div class="d-grid grid-2 gap-3">
+        <app-input-field label="Full Name" placeholder="Parth Modi" [required]="true" formControlName="fullName"></app-input-field>
+        <app-input-field label="Professional Title" placeholder="Frontend Developer" [required]="true" formControlName="professionalTitle"></app-input-field>
+      </div>
+      <div class="d-grid grid-2 gap-3">
+        <app-input-field label="Email" type="email" placeholder="you@example.com" [required]="true" formControlName="email"></app-input-field>
+        <app-input-field label="Phone" placeholder="+91-9033511367" [required]="true" formControlName="phone"></app-input-field>
+      </div>
+      <app-input-field label="Location" placeholder="Gandhinagar, Gujarat, India" formControlName="location"></app-input-field>
+      <app-rich-editor label="About Me" placeholder="Short bio about yourself..." formControlName="aboutMe"></app-rich-editor>
+    </ng-container>
+
+    <!-- Education -->
+    <ng-container *ngSwitchCase="'education'">
+      <app-array-field [array]="arr('education')" [create]="cv.rows.education" addLabel="Education">
+        <ng-template #row let-g>
+          <div [formGroup]="g" class="block-fields">
+            <div class="d-grid grid-2 gap-3">
+              <app-input-field label="Degree" placeholder="B.E. Mechatronics" formControlName="degree"></app-input-field>
+              <app-input-field label="School" placeholder="e.g. Gujarat Technological University" formControlName="institute"></app-input-field>
+            </div>
+            <div class="d-grid grid-2 gap-3">
+              <app-date-picker label="Start Date" mode="year" formControlName="startDate"></app-date-picker>
+              <app-date-picker label="End Date" mode="year" [allowPresent]="true" formControlName="endDate"></app-date-picker>
+            </div>
+            <div class="d-grid grid-2 gap-3">
+              <app-input-field label="Location" placeholder="India" formControlName="location"></app-input-field>
+              <app-input-field label="Score / GPA" placeholder="e.g. 8.5 CGPA" formControlName="score"></app-input-field>
+            </div>
+            <app-rich-editor label="Description" placeholder="Relevant coursework, achievements, honors..." minHeight="80px" formControlName="description"></app-rich-editor>
+          </div>
+        </ng-template>
+      </app-array-field>
+    </ng-container>
+
+    <!-- Technical skills -->
+    <ng-container *ngSwitchCase="'skills'">
+      <app-array-field [array]="arr('technicalSkills')" [create]="cv.rows.technicalSkills" addLabel="Skill Group" [sortable]="true">
+        <ng-template #row let-g>
+          <div [formGroup]="g" class="block-fields">
+            <app-input-field label="Category" placeholder="e.g. Frontend" formControlName="category"></app-input-field>
+            <app-textarea-field label="Skills" placeholder="React.js, TypeScript, Angular, Next.js..." hint="Separate skills with commas" [rows]="3" formControlName="items"></app-textarea-field>
+          </div>
+        </ng-template>
+      </app-array-field>
+    </ng-container>
+
+    <!-- Languages -->
+    <ng-container *ngSwitchCase="'languages'">
+      <app-array-field variant="row" [array]="arr('languages')" [create]="cv.rows.languages" addLabel="Language">
+        <ng-template #row let-g>
+          <div [formGroup]="g" class="lang-row">
+            <app-input-field placeholder="e.g. English" formControlName="name"></app-input-field>
+            <app-select-field [options]="levelOptions" formControlName="level"></app-select-field>
+          </div>
+        </ng-template>
+      </app-array-field>
+    </ng-container>
+
+    <!-- Experience -->
+    <ng-container *ngSwitchCase="'experience'">
+      <app-array-field [array]="arr('experience')" [create]="cv.rows.experience" addLabel="Experience">
+        <ng-template #row let-g>
+          <div [formGroup]="g" class="block-fields">
+            <div class="d-grid grid-2 gap-3">
+              <app-input-field label="Role" placeholder="SDE III" formControlName="role"></app-input-field>
+              <app-input-field label="Company" placeholder="Company" formControlName="company"></app-input-field>
+            </div>
+            <app-input-field label="Location" placeholder="Bangalore, India" formControlName="location"></app-input-field>
+            <div class="d-grid grid-2 gap-3">
+              <app-date-picker label="Start Date" mode="month-year" formControlName="startDate"></app-date-picker>
+              <app-date-picker label="End Date" mode="month-year" [allowPresent]="true" formControlName="endDate"></app-date-picker>
+            </div>
+            <app-rich-editor label="Description" placeholder="Description of your role and achievements..." minHeight="90px" formControlName="description"></app-rich-editor>
+          </div>
+        </ng-template>
+      </app-array-field>
+    </ng-container>
+
+    <!-- Social links -->
+    <ng-container *ngSwitchCase="'social'">
+      <div formGroupName="socialLinks" class="d-grid grid-2 gap-3">
+        <app-input-field label="LinkedIn" placeholder="LinkedIn URL" type="url" formControlName="linkedin"></app-input-field>
+        <app-input-field label="GitHub" placeholder="GitHub URL" type="url" formControlName="github"></app-input-field>
+        <app-input-field label="Portfolio" placeholder="Portfolio URL" type="url" formControlName="portfolio"></app-input-field>
+        <app-input-field label="Twitter / X" placeholder="Twitter URL" type="url" formControlName="twitter"></app-input-field>
+      </div>
+    </ng-container>
+
+    <!-- GDPR consent -->
+    <ng-container *ngSwitchCase="'gdpr'">
+      <app-rich-editor label="Consent text" minHeight="160px" formControlName="gdprConsent"
+        placeholder="Shown at the bottom of your CV. Edit it if you need to, or leave empty to hide it."></app-rich-editor>
+      <div><button type="button" class="btn-ghost" (click)="resetGdpr()">Reset to default</button></div>
+    </ng-container>
+
+    <!-- Competencies / Interests / Certificates: plain lists of text -->
+    <ng-container *ngSwitchDefault>
+      <app-array-field *ngIf="lists[s.key] as l" variant="row" [array]="arr(l.name)" [create]="cv.rows[l.name]" [addLabel]="l.addLabel">
+        <ng-template #row let-c>
+          <app-input-field [formControl]="c" [placeholder]="l.placeholder"></app-input-field>
+        </ng-template>
+      </app-array-field>
+    </ng-container>
+
+  </app-form-section>
+</div>

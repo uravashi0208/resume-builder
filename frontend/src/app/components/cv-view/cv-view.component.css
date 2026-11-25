@@ -1,7 +1,22 @@
-.cv-meta { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; margin: 0 auto 1rem; max-width: 900px; font-size: var(--fs-sm); }
+/* Layout of the read-only page. Header, tabs, badge, chips, states: shared components + global design system. */
 
-.jd { max-width: 900px; margin: 0 auto 1.25rem; padding: 1.1rem 1.4rem; }
-.jd .card-title { margin: 0 0 .5rem; }
-.jd-body { line-height: 1.55; font-size: .93rem; }
-.jd-body ::ng-deep p { margin: 0 0 .5rem; }
-.jd-body ::ng-deep ul, .jd-body ::ng-deep ol { margin: .2rem 0 .5rem; padding-left: 1.3rem; }
+.chips   { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .9rem; }
+.switcher { margin-bottom: 1.25rem; }
+
+/* one column: CV or job description */
+.pane { max-width: 860px; margin: 0 auto; }
+
+/* side by side: each side scrolls on its own */
+.two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+.two-col .pane { max-width: none; margin: 0; min-height: 320px; max-height: calc(100vh - 290px); overflow-y: auto; }
+
+.jd-card { padding: 1.5rem 1.75rem; }
+.jd-body { margin-top: .9rem; line-height: 1.6; font-size: var(--fs-md); }
+.jd-body ::ng-deep p { margin-bottom: .6rem; }
+.jd-body ::ng-deep ul, .jd-body ::ng-deep ol { margin: .2rem 0 .8rem; padding-left: 1.3rem; }
+.jd-body ::ng-deep li { margin-bottom: .2rem; }
+
+@media (max-width: 1000px) {
+  .two-col { display: block; }
+  .two-col .pane { max-height: none; overflow: visible; margin-bottom: 1.25rem; }
+}

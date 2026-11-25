@@ -4,7 +4,7 @@
 
 import {
   Component, Input, ViewChild, ElementRef, Optional, Self,
-  AfterViewInit, OnDestroy, NgZone,
+  AfterViewInit, OnDestroy, NgZone, ChangeDetectorRef,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl, AbstractControl } from '@angular/forms';
 import { Editor, Extension } from '@tiptap/core';
@@ -128,7 +128,7 @@ export class RichEditorComponent implements ControlValueAccessor, AfterViewInit,
   private _onChange:  (v: string) => void = () => {};
   private _onTouched: () => void = () => {};
 
-  constructor(@Optional() @Self() public ngControl: NgControl, private zone: NgZone) {
+  constructor(@Optional() @Self() public ngControl: NgControl, private zone: NgZone, private cdr: ChangeDetectorRef) {
     if (ngControl) ngControl.valueAccessor = this;
   }
 
@@ -187,6 +187,8 @@ export class RichEditorComponent implements ControlValueAccessor, AfterViewInit,
       });
     });
     this.syncStates();
+    // toolbar flags (bold / bullet…) just changed after the view was checked -> refresh now (avoids NG0100 in dev mode)
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy(): void { this.editor?.destroy(); }

@@ -1,0 +1,48 @@
+<!-- ⋮⋮ drag handle: pressing it "arms" its row so only then the row is draggable -->
+<ng-template #grip let-i>
+  <span class="handle" title="Drag to re-order" aria-hidden="true" (mousedown)="armed = i" (mouseup)="armed = null">
+    <app-icon name="grip" [size]="16"></app-icon>
+  </span>
+</ng-template>
+
+<!-- ▲ ▼ : same thing for touch screens and keyboard -->
+<ng-template #arrows let-i>
+  <button type="button" class="move" [disabled]="i === 0" (click)="move(i, i - 1)" title="Move up" aria-label="Move up">
+    <app-icon name="chevron-up" [size]="14"></app-icon>
+  </button>
+  <button type="button" class="move" [disabled]="i === array.length - 1" (click)="move(i, i + 1)" title="Move down" aria-label="Move down">
+    <app-icon name="chevron-down" [size]="14"></app-icon>
+  </button>
+</ng-template>
+
+<div class="items" [class.rows]="variant === 'row'">
+  <div *ngFor="let ctrl of array.controls; let i = index"
+       [class.row]="variant === 'row'" [class.block-card]="variant === 'block'"
+       [class.dragging]="dragIndex === i" [class.drop-before]="isDropBefore(i)" [class.drop-after]="isDropAfter(i)"
+       [attr.draggable]="sortable && armed === i ? 'true' : null"
+       (dragstart)="onDragStart($event, i)" (dragover)="onDragOver($event, i)" (drop)="onDrop($event, i)" (dragend)="onDragEnd()">
+
+    <!-- block: header strip with handle + title + ▲ ▼ -->
+    <div class="block-bar" *ngIf="sortable && variant === 'block'">
+      <ng-container *ngTemplateOutlet="grip; context: { $implicit: i }"></ng-container>
+      <span class="block-title">{{ addLabel }} {{ i + 1 }}</span>
+      <ng-container *ngTemplateOutlet="arrows; context: { $implicit: i }"></ng-container>
+    </div>
+    <!-- row: handle in front -->
+    <ng-container *ngIf="sortable && variant === 'row'">
+      <ng-container *ngTemplateOutlet="grip; context: { $implicit: i }"></ng-container>
+    </ng-container>
+
+    <div class="cell"><ng-container *ngTemplateOutlet="rowTpl; context: { $implicit: ctrl, index: i }"></ng-container></div>
+
+    <ng-container *ngIf="sortable && variant === 'row'">
+      <ng-container *ngTemplateOutlet="arrows; context: { $implicit: i }"></ng-container>
+    </ng-container>
+
+    <button type="button" class="btn-icon danger sm" [class.block-remove-corner]="variant === 'block'"
+            *ngIf="array.length > min" (click)="remove(i)" title="Remove" aria-label="Remove">
+      <app-icon name="close" [size]="12"></app-icon>
+    </button>
+  </div>
+</div>
+<button type="button" class="btn-add" (click)="add()">+ Add {{ addLabel }}</button>

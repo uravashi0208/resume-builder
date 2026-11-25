@@ -1,309 +1,55 @@
-<div class="editor-page d-flex flex-column">
+<div class="page-shell" style="--page-w:1440px">
 
-  <!-- Top bar: Back + Save/Cancel -->
-  <div class="top-bar glass glass-pill d-flex align-center justify-between gap-4">
-    <div class="d-flex align-center gap-3">
-      <button type="button" class="btn-icon" (click)="cancel()" title="Go back">
-        <svg viewBox="0 0 20 20" width="18" height="18" fill="none">
-          <path d="M12 5l-5 5 5 5" stroke="currentColor" stroke-width="1.8"
-            stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <h2 class="top-title">{{ editingId ? 'Edit Application' : 'New Application' }}</h2>
-    </div>
-    <div class="d-flex align-center gap-3">
-      <p class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</p>
-      <button type="button" class="btn-secondary" (click)="cancel()">Cancel</button>
-      <button type="button" class="btn-primary" (click)="save()" [disabled]="saving">
-        {{ saving ? 'Saving...' : 'Save' }}
-      </button>
-    </div>
-  </div>
+  <app-page-header eyebrow="Application" [title]="editingId ? 'Edit' : 'New'" accent="application" [subtitle]="subtitle">
+    <button type="button" class="btn-secondary" (click)="cancel()">Cancel</button>
+    <button type="button" class="btn-primary" (click)="save()" [disabled]="saving">{{ saving ? 'Saving...' : 'Save' }}</button>
+  </app-page-header>
 
-  <div *ngIf="loading" class="loading-state d-flex align-center justify-center">Loading...</div>
+  <p class="msg-error mb-2" *ngIf="errorMsg">{{ errorMsg }}</p>
+  <app-state *ngIf="loading" [loading]="true"></app-state>
 
-  <form [formGroup]="form" *ngIf="!loading" class="editor-body d-flex">
+  <form [formGroup]="form" *ngIf="!loading" class="editor-grid">
 
-      <!-- Left sidebar: section list -->
-      <app-side-nav [items]="sections" [active]="activeSection" (select)="setSection($any($event))"></app-side-nav>
+    <!-- Left: steps -->
+    <app-side-nav class="rail" [items]="sections" [active]="activeSection" [numbered]="true" (select)="go($event)"></app-side-nav>
 
-      <!-- Middle: active section's form fields -->
-      <div class="section-form">
-
-        <!-- Company Details -->
-        <div *ngIf="activeSection === 'company'" formGroupName="company" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">Company Details</h3>
-          <app-input-field label="Company Name" placeholder="e.g. Google"
-            [required]="true" formControlName="companyName">
-          </app-input-field>
-
-          <app-input-field label="Applied Title" placeholder="e.g. Frontend Developer"
-            [required]="true" formControlName="appliedTitle">
-          </app-input-field>
-
-          <app-date-picker label="Apply Date" [required]="true"
-            formControlName="applyDate">
-          </app-date-picker>
-
-          <app-input-field label="Location" placeholder="e.g. Bangalore, India"
-            formControlName="location">
-          </app-input-field>
-
-          <app-select-field label="Status"
-            [options]="[{value:'Applied',label:'Applied'},{value:'Accepted',label:'Accepted'},{value:'Rejected',label:'Rejected'}]"
-            formControlName="status">
-          </app-select-field>
-
-          <app-rich-editor
-            label="Job Description"
-            placeholder="Paste the job description here, so you can read it later..."
-            minHeight="220px"
-            formControlName="jobDescription">
-          </app-rich-editor>
-        </div>
-
-        <!-- Basic Info -->
-        <div *ngIf="activeSection === 'basic'" formGroupName="profile" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">Basic Info</h3>
-            <div class="photo-field d-flex align-center gap-4">
-            <div class="photo-preview d-flex align-center justify-center">
-              <img *ngIf="form.get('profile.photo')?.value as ph; else noPhoto" [src]="ph" alt="Photo" />
-              <ng-template #noPhoto><span>No photo</span></ng-template>
-            </div>
-            <div class="photo-actions d-flex flex-wrap align-center gap-2">
-              <label class="btn-ghost photo-upload">
-                Upload photo
-                <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
-              </label>
-              <button type="button" class="btn-ghost" *ngIf="form.get('profile.photo')?.value" (click)="removePhoto()">Remove</button>
-              <small>Shown at the top of your CV.</small>
-            </div>
-          </div>
-          <app-input-field label="Full Name" placeholder="Parth Modi"
-            [required]="true" formControlName="fullName">
-          </app-input-field>
-
-          <app-input-field label="Professional Title" placeholder="Frontend Developer"
-            [required]="true" formControlName="professionalTitle">
-          </app-input-field>
-
-          <app-input-field label="Email" type="email" placeholder="you@example.com"
-            [required]="true" formControlName="email">
-          </app-input-field>
-
-          <app-input-field label="Phone" placeholder="+91-9033511367"
-            [required]="true" formControlName="phone">
-          </app-input-field>
-
-          <app-input-field label="Location" placeholder="Gandhinagar, Gujarat, India"
-            formControlName="location">
-          </app-input-field>
-
-          <app-rich-editor
-            label="About Me"
-            placeholder="Short bio about yourself..."
-            formControlName="aboutMe">
-          </app-rich-editor>
-        </div>
-
-        <!-- Education -->
-        <div *ngIf="activeSection === 'education'" formGroupName="profile" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">Education</h3>
-          <div formArrayName="education">
-            <div class="block-card" *ngFor="let edu of education.controls; let i = index" [formGroupName]="i">
-
-              <div class="d-flex flex-column">
-                <app-input-field label="Degree" formControlName="degree" placeholder="Master of Science in Information and Technology"></app-input-field>
-              </div>
-
-              <div class="d-flex flex-column">
-                <app-input-field label="School" formControlName="institute" placeholder="e.g. Gujarat Technological University"></app-input-field>
-              </div>
-
-              <!-- Start / End Date / Location -->
-              <div class="d-grid grid-3 gap-3 align-end">
-                <app-date-picker label="Start Date" mode="year" formControlName="startDate"></app-date-picker>
-                <app-date-picker label="End Date" mode="year" [allowPresent]="true" formControlName="endDate"></app-date-picker>
-                <div class="d-flex flex-column">
-                  <app-input-field label="Location" formControlName="location" placeholder="India"></app-input-field>
-                </div>
-              </div>
-
-              <div class="d-flex flex-column">
-                <app-input-field label="Score / GPA" formControlName="score" placeholder="e.g. 8.5 CGPA"></app-input-field>
-              </div>
-
-              <div class="d-flex flex-column">
-                <app-rich-editor
-                  label="Description"
-                  placeholder="Relevant coursework, achievements, honors..."
-                  minHeight="80px"
-                  formControlName="description">
-                </app-rich-editor>
-              </div>
-
-              <button type="button" class="btn-icon danger sm block-remove-corner"
-                (click)="removeEducation(i)" *ngIf="education.length > 1" title="Remove" aria-label="Remove">
-                <svg viewBox="0 0 14 14" width="12" height="12" fill="none">
-                  <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <button type="button" class="btn-add" (click)="addEducation()">+ Add Education</button>
-        </div>
-
-        <!-- Core Competencies -->
-        <div *ngIf="activeSection === 'competencies'" formGroupName="profile" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">Core Competencies</h3>
-          <div formArrayName="coreCompetencies">
-            <div class="dynamic-row" *ngFor="let c of coreCompetencies.controls; let i = index">
-              <app-input-field [formControlName]="i" placeholder="e.g. Team Leadership" style="flex:1"></app-input-field>
-              <button type="button" class="btn-danger" (click)="removeCompetency(i)" *ngIf="coreCompetencies.length > 1">✕</button>
-            </div>
-          </div>
-          <button type="button" class="btn-add" (click)="addCompetency()">+ Add Competency</button>
-        </div>
-
-        <!-- Technical Skills -->
-        <div *ngIf="activeSection === 'skills'" formGroupName="profile" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">Technical Skills</h3>
-          <div formArrayName="technicalSkills" class="d-flex flex-column gap-3">
-            <div class="block-card" *ngFor="let s of technicalSkills.controls; let i = index" [formGroupName]="i">
-              <!-- Header: category input + remove button -->
-              <div class="block-card-header">
-                <app-input-field
-                  label="Category"
-                  formControlName="category"
-                  placeholder="e.g. Frontend">
-                </app-input-field>
-                <button type="button" class="btn-icon danger sm block-remove-corner"
-                  (click)="removeSkillGroup(i)"
-                  *ngIf="technicalSkills.length > 1"
-                  title="Remove skill group">
-                  <svg viewBox="0 0 14 14" width="12" height="12" fill="none">
-                    <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                  </svg>
-                </button>
-              </div>
-              <!-- Skills editor below -->
-              <app-textarea-field
-                label="Skills"
-                placeholder="React.js, TypeScript, Angular, Next.js..."
-                hint="Separate skills with commas"
-                [rows]="3"
-                formControlName="items">
-              </app-textarea-field>
-            </div>
-          </div>
-          <button type="button" class="btn-add" (click)="addSkillGroup()">+ Add Skill Group</button>
-        </div>
-
-        <!-- Interests -->
-        <div *ngIf="activeSection === 'interests'" formGroupName="profile" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">Interests</h3>
-          <div formArrayName="interests">
-            <div class="dynamic-row" *ngFor="let it of interests.controls; let i = index">
-              <app-input-field [formControlName]="i" placeholder="e.g. Photography" style="flex:1"></app-input-field>
-              <button type="button" class="btn-danger" (click)="removeInterest(i)" *ngIf="interests.length > 1">✕</button>
-            </div>
-          </div>
-          <button type="button" class="btn-add" (click)="addInterest()">+ Add Interest</button>
-        </div>
-
-        <!-- Certificates -->
-        <div *ngIf="activeSection === 'certificates'" formGroupName="profile" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">Certificates</h3>
-          <div formArrayName="certificates">
-            <div class="dynamic-row" *ngFor="let c of certificates.controls; let i = index">
-              <app-input-field [formControlName]="i" placeholder="e.g. Project Management Professional (PMP)" style="flex:1"></app-input-field>
-              <button type="button" class="btn-danger" (click)="removeCertificate(i)" *ngIf="certificates.length > 1">✕</button>
-            </div>
-          </div>
-          <button type="button" class="btn-add" (click)="addCertificate()">+ Add Certificate</button>
-        </div>
-
-        <!-- Languages -->
-        <div *ngIf="activeSection === 'languages'" formGroupName="profile" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">Languages</h3>
-          <div formArrayName="languages">
-            <div class="dynamic-row" *ngFor="let l of languages.controls; let i = index" [formGroupName]="i">
-              <app-input-field formControlName="name" placeholder="e.g. English" style="flex:1"></app-input-field>
-              <app-select-field [options]="levelOptions" formControlName="level" style="width:150px"></app-select-field>
-              <button type="button" class="btn-danger" (click)="removeLanguage(i)" *ngIf="languages.length > 1">✕</button>
-            </div>
-          </div>
-          <button type="button" class="btn-add" (click)="addLanguage()">+ Add Language</button>
-        </div>
-
-        <!-- Experience -->
-        <div *ngIf="activeSection === 'experience'" formGroupName="profile" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">Experience</h3>
-          <div formArrayName="experience">
-            <div class="block-card" *ngFor="let exp of experience.controls; let i = index" [formGroupName]="i">
-              <div class="d-grid grid-2 gap-3">
-                <app-input-field label="Role" formControlName="role" placeholder="Role" style="flex:1"></app-input-field>
-                <app-input-field label="Company" formControlName="company" placeholder="Company" style="flex:1"></app-input-field>
-              </div>
-              <app-input-field label="Location" formControlName="location" placeholder="Location"></app-input-field>
-
-              <div class="d-flex align-center flex-wrap gap-3">
-                <app-date-picker label="Start Date" mode="month-year" formControlName="startDate" style="flex:1"></app-date-picker>
-                <app-date-picker label="End Date" mode="month-year" [allowPresent]="true" formControlName="endDate" style="flex:1"></app-date-picker>
-              </div>
-
-              <app-rich-editor
-                placeholder="Description of your role and achievements..."
-                minHeight="90px"
-                formControlName="description">
-              </app-rich-editor>
-              <button type="button" class="btn-icon danger sm block-remove-corner"
-                (click)="removeExperience(i)" *ngIf="experience.length > 1" title="Remove" aria-label="Remove">
-                <svg viewBox="0 0 14 14" width="12" height="12" fill="none">
-                  <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <button type="button" class="btn-add" (click)="addExperience()">+ Add Experience</button>
-        </div>
-
-        <!-- Social Links -->
-        <div *ngIf="activeSection === 'social'" formGroupName="profile" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">Social Links</h3>
-          <div formGroupName="socialLinks" class="d-flex flex-column gap-4">
-              <app-input-field label="LinkedIn" formControlName="linkedin" placeholder="LinkedIn URL" type="url"></app-input-field>
-              <app-input-field label="GitHub" formControlName="github" placeholder="GitHub URL" type="url"></app-input-field>
-              <app-input-field label="Portfolio" formControlName="portfolio" placeholder="Portfolio URL" type="url"></app-input-field>
-              <app-input-field label="Twitter" formControlName="twitter" placeholder="Twitter/X URL" type="url"></app-input-field>
-          </div>
-        </div>
-
-        <!-- GDPR Consent -->
-        <div *ngIf="activeSection === 'gdpr'" formGroupName="profile" class="panel d-flex flex-column gap-4">
-          <h3 class="panel-title">GDPR Consent</h3>
-          <app-rich-editor
-                label="Consent text"
-                placeholder="Shown at the bottom of your CV. Same text is used for all CVs — edit it here if you need to. Leave empty to hide it."
-                minHeight="200px"
-                formControlName="gdprConsent">
-              </app-rich-editor>
-          <!-- <app-textarea-field
-            label="Consent text"
-            hint="Shown at the bottom of your CV. Same text is used for all CVs — edit it here if you need to. Leave empty to hide it."
-            [rows]="5"
-            formControlName="gdprConsent"> -->
-          <!-- </app-textarea-field> -->
-          <div>
-            <button type="button" class="btn-ghost" (click)="resetGdprConsent()">Reset to default</button>
-          </div>
-        </div>
+    <!-- Middle: progress + the active step -->
+    <div class="editor-main">
+      <div class="progress">
+        <p class="progress-text">Step <b>{{ stepIndex + 1 }}</b> of {{ sections.length }} · {{ stepLabel }}</p>
+        <div class="track"><div class="bar" [style.width.%]="progress"></div></div>
       </div>
 
+      <app-form-section *ngIf="activeSection === 'company'" formGroupName="company" title="Company Details">
+        <div class="d-grid grid-2 gap-3">
+          <app-input-field label="Company Name" placeholder="e.g. Google" [required]="true" formControlName="companyName"></app-input-field>
+          <app-input-field label="Applied Title" placeholder="e.g. Frontend Developer" [required]="true" formControlName="appliedTitle"></app-input-field>
+        </div>
+        <div class="d-grid grid-3 gap-3">
+          <app-date-picker label="Apply Date" [required]="true" formControlName="applyDate"></app-date-picker>
+          <app-input-field label="Location" placeholder="e.g. Bangalore, India" formControlName="location"></app-input-field>
+          <app-select-field label="Status" [options]="statusOptions" formControlName="status"></app-select-field>
+        </div>
+        <app-rich-editor label="Job Description" placeholder="Paste the job description here, so you can read it later..."
+          minHeight="220px" formControlName="jobDescription"></app-rich-editor>
+      </app-form-section>
 
-    <!-- Right: live plain view of the CV content (read-only) -->
-    <div class="preview-panel">
-      <app-cv-plain [profile]="previewProfile"></app-cv-plain>
+      <app-cv-form *ngIf="activeSection !== 'company'" [form]="profileForm" [section]="$any(activeSection)"></app-cv-form>
+
+      <div class="step-nav">
+        <button type="button" class="btn-ghost" [disabled]="stepIndex === 0" (click)="prev()"><app-icon name="back" [size]="14"></app-icon> Previous</button>
+        <button type="button" class="btn-primary" *ngIf="!isLast" (click)="next()">Next <app-icon name="arrow-right" [size]="14"></app-icon></button>
+        <button type="button" class="btn-primary" *ngIf="isLast" (click)="save()" [disabled]="saving">{{ saving ? 'Saving...' : 'Save application' }}</button>
+      </div>
     </div>
+
+    <!-- Right: live plain view of the CV (read-only) -->
+    <aside class="preview">
+      <div class="preview-head">
+        <span class="eyebrow">Live preview</span>
+        <span class="hint">Updates as you type</span>
+      </div>
+      <div class="preview-scroll"><app-cv-plain [profile]="previewProfile"></app-cv-plain></div>
+    </aside>
   </form>
 </div>

@@ -1,39 +1,25 @@
 <app-auth-layout
-  heroTitle="Build a résumé that"
-  heroAccent="gets noticed."
-  heroSub="Pick a template, fill in your story and download a pixel-perfect PDF in minutes — no design skills needed.">
+  heroTitle="Keep every application"
+  heroAccent="in one place."
+  heroSub="Your CV, the job description and the status of each application — saved online, ready to read whenever you need it.">
 
-  <form class="auth-card glass" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-    <nav class="tabs auth-switch">
-      <a routerLink="/login" routerLinkActive="active">Sign in</a>
-      <a routerLink="/register" routerLinkActive="active">Create account</a>
-    </nav>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+    <app-auth-card
+      title="Welcome back" subtitle="Sign in to continue where you left off."
+      submitLabel="Sign in" loadingLabel="Signing in…"
+      [loading]="loading" [disabled]="loginForm.invalid" [errorMsg]="errorMsg" [infoMsg]="infoMsg"
+      switchText="New here?" switchLabel="Create an account" switchLink="/register">
 
-    <h2 class="display">Welcome back</h2>
-    <p class="auth-subtitle">Sign in to continue where you left off.</p>
-
-    <div class="auth-fields">
       <app-input-field label="Email" type="email" placeholder="you@example.com" autocomplete="email"
-        [required]="true" [control]="loginForm.get('email')" formControlName="email">
-      </app-input-field>
+        [required]="true" formControlName="email"></app-input-field>
       <app-input-field label="Password" type="password" placeholder="Your password" autocomplete="current-password"
-        [required]="true" [control]="loginForm.get('password')" formControlName="password">
-      </app-input-field>
-    </div>
+        [required]="true" formControlName="password"></app-input-field>
 
-    <div class="auth-row">
-      <button type="button" class="link-btn" [disabled]="resetting" (click)="forgotPassword()">
-        {{ resetting ? 'Sending…' : 'Forgot password?' }}
-      </button>
-    </div>
-
-    <p class="msg-error"   *ngIf="errorMsg">{{ errorMsg }}</p>
-    <p class="msg-success" *ngIf="infoMsg">{{ infoMsg }}</p>
-
-    <button type="submit" class="btn-primary btn-block" [disabled]="loginForm.invalid || loading">
-      <span>{{ loading ? 'Signing in…' : 'Sign in' }}</span>
-      <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><path d="M4 10h11m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <p class="switch-link">New here? <a routerLink="/register">Create an account</a></p>
+      <div extra class="auth-row">
+        <button type="button" class="link-btn" [disabled]="resetting" (click)="forgotPassword()">
+          {{ resetting ? 'Sending…' : 'Forgot password?' }}
+        </button>
+      </div>
+    </app-auth-card>
   </form>
 </app-auth-layout>

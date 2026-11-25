@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApplicationService } from '../../services/application.service';
-import { Application, ApplicationStatus } from '../../models/application.model';
+import { APPLICATION_STATUSES, Application, ApplicationStatus } from '../../models/application.model';
 
 const PAGE_SIZE = 15;
 
@@ -22,7 +22,10 @@ export class ApplicationsTableComponent implements OnInit {
   // Search + filter
   searchTerm = '';
   statusFilter: 'All' | ApplicationStatus = 'All';
-  statusOptions: ('All' | ApplicationStatus)[] = ['All', 'Applied', 'Accepted', 'Rejected'];
+  readonly statusOptions: ('All' | ApplicationStatus)[] = ['All', ...APPLICATION_STATUSES];
+
+  /** summary tiles above the table (rebuilt whenever the list is loaded) */
+  stats: { label: string; value: number; cls: string }[] = [];
 
   // Pagination
   currentPage = 1;
@@ -40,6 +43,7 @@ export class ApplicationsTableComponent implements OnInit {
     this.applicationService.getMyApplications().subscribe({
       next: (apps) => {
         this.allApplications = apps;
+        this.stats = this.buildStats(apps);
         this.applyFilters();
         this.loading = false;
       },
@@ -122,21 +126,11 @@ export class ApplicationsTableComponent implements OnInit {
     this.router.navigate(['/cv-view', app.id]);
   }
 
-  /** summary tiles above the table */
-  get stats() {
-    const all = this.allApplications ?? [];
-    const n = (st: string) => all.filter((a) => a.status === st).length;
+  private buildStats(all: Application[]) {
+    const count = (status: ApplicationStatus) => all.filter((a) => a.status === status).length;
     return [
-      { label: 'Total',    value: all.length,   cls: 'total' },
-      { label: 'Applied',  value: n('Applied'),  cls: 'applied' },
-      { label: 'Accepted', value: n('Accepted'), cls: 'accepted' },
-      { label: 'Rejected', value: n('Rejected'), cls: 'rejected' },
+      { label: 'Total', value: all.length, cls: 'total' },
+      ...APPLICATION_STATUSES.map((s) => ({ label: s, value: count(s), cls: s.toLowerCase() })),
     ];
-  }
-
-  statusClass(status: ApplicationStatus): string {
-    if (status === 'Accepted') return 'badge accepted';
-    if (status === 'Rejected') return 'badge rejected';
-    return 'badge applied';
   }
 }

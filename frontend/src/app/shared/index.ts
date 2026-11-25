@@ -10,3 +10,12 @@ export { SelectFieldComponent, SelectOption }     from './components/select-fiel
 export { DatePickerComponent }                    from './components/date-picker/date-picker.component';
 export { SideNavComponent, NavItem }              from './components/side-nav/side-nav.component';
 export { AuthLayoutComponent }                 from './components/auth-layout/auth-layout.component';
+export { AuthCardComponent }                   from './components/auth-card/auth-card.component';
+export { IconComponent, IconName }             from './components/icon/icon.component';
+export { BrandComponent }                      from './components/brand/brand.component';
+export { PageHeaderComponent }                 from './components/page-header/page-header.component';
+export { StatusBadgeComponent }                from './components/status-badge/status-badge.component';
+export { StateComponent }                      from './components/state/state.component';
+export { SegmentedTabsComponent, TabOption }   from './components/segmented-tabs/segmented-tabs.component';
+export { FormSectionComponent }                from './components/form-section/form-section.component';
+export { ArrayFieldComponent }                 from './components/array-field/array-field.component';
